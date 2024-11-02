@@ -11,10 +11,11 @@ class PokemonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final imgSize = size.height * 0.1;
+    final borderRadius = BorderRadius.circular(10.0);
 
     return Material(
       elevation: 3.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      shape: RoundedRectangleBorder(borderRadius: borderRadius),
       child: Container(
         padding: const EdgeInsets.symmetric(
           vertical: 8.0,
@@ -22,7 +23,7 @@ class PokemonCard extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: AppTheme.typeColors[pk.types.first],
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: borderRadius,
         ),
         child: Row(
           children: [

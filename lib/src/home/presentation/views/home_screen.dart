@@ -3,6 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/data/repository/home_repository.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_card.dart';
+import 'package:pokedex/src/home/presentation/widgets/rounded_text_field.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
@@ -80,8 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Pokédex'),
         centerTitle: true,
+        forceMaterialTransparency: true,
         actions: [
           IconButton(
+            tooltip: 'Guess the Pokémon!',
             icon: const Icon(
               Icons.question_mark_rounded,
               color: Colors.redAccent,
@@ -90,25 +93,52 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ListView.separated(
-        controller: _controller,
+      body: Padding(
         padding: const EdgeInsets.all(10.0),
-        itemCount: _pokemons.length + (_isLoading ? 1 : 0),
-        separatorBuilder: (_, __) => const SizedBox(height: 10.0),
-        itemBuilder: (_, index) {
-          if (index == _pokemons.length) {
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 35.0),
-              child: const Center(
-                  child: CircularProgressIndicator(
-                color: Colors.redAccent,
-              )),
-            );
-          } else {
-            return PokemonCard(pk: _pokemons[index]);
-          }
-        },
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: RoundedTextField(
+                    hintText: 'Search by name',
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                ),
+                // filter button
+                IconButton(
+                  tooltip: 'Filters',
+                  icon: const Icon(Icons.filter_alt_rounded),
+                  onPressed: () {},
+                )
+              ],
+            ),
+            const SizedBox(height: 15.0),
+            Expanded(
+              child: ListView.separated(
+                controller: _controller,
+                itemCount: _pokemons.length + (_isLoading ? 1 : 0),
+                separatorBuilder: (_, __) => const SizedBox(height: 10.0),
+                itemBuilder: _buildPokemonCard,
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget? _buildPokemonCard(_, index) {
+    if (index == _pokemons.length) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 35.0),
+        child: const Center(
+            child: CircularProgressIndicator(
+          color: Colors.redAccent,
+        )),
+      );
+    } else {
+      return PokemonCard(pk: _pokemons[index]);
+    }
   }
 }

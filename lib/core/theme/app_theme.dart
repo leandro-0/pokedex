@@ -20,7 +20,5 @@ class AppTheme {
     'dragon': Color(0xFFB99BF9),
     'dark': Color(0xFF8C7463),
     'fairy': Color(0xFFF4C1D2),
-    'stellar': Color(0xFF816FBF),
-    'unknown': Color(0xFFA5C4BC),
   };
 }

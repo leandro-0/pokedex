@@ -20,6 +20,27 @@ class AppTheme {
     'dragon': Color(0xFF7382b9),
     'dark': Color(0xFF6f6d78),
     'fairy': Color(0xFFeaa8c2),
-    'stellar': Color(0xFF5bc6b7),
+  };
+
+  static const Map<String, Color> typeChipColors = {
+    'normal': Color(0xFF9fa19f),
+    'fighting': Color(0xFFff8000),
+    'flying': Color(0xFF81b9ef),
+    'poison': Color(0xFF9141cb),
+    'ground': Color(0xFF915121),
+    'rock': Color(0xFFafa981),
+    'bug': Color(0xFF3a400a),
+    'ghost': Color(0xFF704170),
+    'steel': Color(0xFF60a1b8),
+    'fire': Color(0xFFe62829),
+    'water': Color(0xFF2980ef),
+    'grass': Color(0xFF3fa129),
+    'electric': Color(0xFFfac000),
+    'psychic': Color(0xFFef4179),
+    'ice': Color(0xFF3dcef3),
+    'dragon': Color(0xFF5060e0),
+    'dark': Color(0xFF624d4e),
+    'fairy': Color(0xFFef70ef),
+    'stellar': Color(0xFF40b5a5),
   };
 }

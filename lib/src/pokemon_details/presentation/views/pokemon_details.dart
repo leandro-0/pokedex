@@ -44,7 +44,6 @@ class _PokemonDetailsState extends State<PokemonDetails>
   Widget build(BuildContext context) {
     final pkBasicInfo =
         ModalRoute.of(context)!.settings.arguments as PokemonTile;
-
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(

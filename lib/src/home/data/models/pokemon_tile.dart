@@ -1,13 +1,13 @@
 class PokemonTile {
   final int id;
   final String name;
-  final String? spriteUrl;
+  final String spriteUrl;
   final List<String> types;
 
   PokemonTile({
     required this.id,
     required this.name,
-    this.spriteUrl,
+    required this.spriteUrl,
     required this.types,
   });
 

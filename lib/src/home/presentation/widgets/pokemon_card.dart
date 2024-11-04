@@ -27,11 +27,13 @@ class PokemonCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // TODO: show not available image
-            Image.network(
-              pk.spriteUrl!,
-              width: imgSize,
-              height: imgSize,
+            Hero(
+              tag: 'card-${pk.id}',
+              child: Image.network(
+                pk.spriteUrl,
+                width: imgSize,
+                height: imgSize,
+              ),
             ),
             const SizedBox(width: 15.0),
             Column(

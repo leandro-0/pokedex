@@ -9,7 +9,7 @@ class HomeRepository {
   }) async {
     final query = gql(r'''
       query pokemonsList($limit: Int, $offset: Int) {
-        pokemon_v2_pokemon(limit: $limit, offset: $offset) {
+        pokemon_v2_pokemon(limit: $limit, offset: $offset, where: {id: {_lte: 1025}}) {
           id
           name
           pokemon_v2_pokemonsprites {

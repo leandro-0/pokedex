@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
-import 'package:pokedex/src/pokemon_details/presentation/models/pokemon_stats';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_about.dart';
 
 class PokemonDetails extends StatefulWidget {
@@ -45,7 +44,6 @@ class _PokemonDetailsState extends State<PokemonDetails>
   Widget build(BuildContext context) {
     final pkBasicInfo =
         ModalRoute.of(context)!.settings.arguments as PokemonTile;
-    final pkStatInfo = ModalRoute.of(context)!.settings.arguments as PokemonStats;
 
     return Scaffold(
       backgroundColor: backgroundColor,

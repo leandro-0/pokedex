@@ -5,12 +5,12 @@ class PokemonDetails {
 
   PokemonDetails()
       : client = GraphQLClient(
-          link: HttpLink('https://beta.pokeapi.co/graphql/v1beta'),
+          link: HttpLink('https://beta.pokeapi.co/graphql/v1beta'), 
           cache: GraphQLCache(),
         );
 
-  static String get pokemonSpeciesQuery => '''
-  query getPokemonSpecies(\$id: Int!) {
+  static String get pokemonCompleteQuery => '''
+  query getPokemonComplete(\$id: Int!) {
     pokemon_v2_pokemonspecies(where: {id: {_eq: \$id}}) {
       is_legendary
       is_mythical
@@ -23,6 +23,17 @@ class PokemonDetails {
       pokemon_v2_pokemons {
         height
         weight
+        pokemon_v2_pokemonstats {
+          base_stat
+          pokemon_v2_stat {
+            name
+          }
+        }
+        pokemon_v2_pokemontypes {
+          pokemon_v2_type {
+            name
+          }
+        }
       }
       pokemon_v2_pokemonegggroups {
         pokemon_v2_egggroup {
@@ -39,28 +50,10 @@ class PokemonDetails {
   }
 ''';
 
-  static String get pokemonStatsQuery => '''
-  query getPokemonStats (\$id: Int!) {
-    pokemon_v2_pokemons(where: {id: {_eq: \$id}}) {
-      pokemon_v2_pokemonstats {
-        base_stat
-        pokemon_v2_stat {
-          name
-        }
-      }
-      pokemon_v2_pokemontypes {
-          pokemon_v2_type {
-            name
-          }
-        }
-      }
-    }
-''';
-
   Future<Map<String, dynamic>> getPokemonDescription(int pokemonId) async {
     try {
       final QueryOptions options = QueryOptions(
-        document: gql(pokemonSpeciesQuery),
+        document: gql(pokemonCompleteQuery),
         variables: {
           'id': pokemonId,
         },
@@ -79,26 +72,26 @@ class PokemonDetails {
 
       final pokemon = data['pokemon_v2_pokemons']?[0];
       final eggGroups = data['pokemon_v2_pokemonegggroups']
-              ?.map((e) => e['pokemon_v2_egggroup']['name'])
-              .toList() ??
-          [];
+          ?.map((e) => e['pokemon_v2_egggroup']['name'].toString())
+          ?.toList()
+          ?.cast<String>() ?? [];
 
       final genderRate = data['gender_rate'];
       final malePercentage = genderRate == -1 ? 0 : (8 - genderRate) / 8 * 100;
       final femalePercentage = genderRate == -1 ? 0 : genderRate / 8 * 100;
 
-      final stats = pokemon?['pokemon_v2_pokemonstats']?.map((e) {
-            return {
-              'name': e['pokemon_v2_stat']['name'],
-              'base_stat': e['base_stat'],
-            };
-          }).toList() ??
-          [];
-
       final types = pokemon?['pokemon_v2_pokemontypes']
-              ?.map((e) => e['pokemon_v2_type']['name'])
-              .toList() ??
-          [];
+          ?.map((e) => e['pokemon_v2_type']['name'].toString())
+          ?.toList()
+          ?.cast<String>() ?? [];
+
+      final stats = pokemon?['pokemon_v2_pokemonstats']
+          ?.map((e) => {
+                'name': e['pokemon_v2_stat']['name'],
+                'base_stat': e['base_stat'],
+              })
+          ?.toList()
+          ?.cast<Map<String, dynamic>>() ?? [];
 
       return {
         'description': data['pokemon_v2_pokemonspeciesflavortexts']?[0]
@@ -110,10 +103,7 @@ class PokemonDetails {
         'generation': data['pokemon_v2_generation']?['name'] ?? 'unknown',
         'height': pokemon?['height'] ?? 0,
         'weight': pokemon?['weight'] ?? 0,
-        'types': pokemon?['pokemon_v2_pokemontypes']
-                ?.map((e) => e['pokemon_v2_type']['name'])
-                .toList() ??
-            [],
+        'types': types,
         'eggGroups': eggGroups,
         'malePercentage': malePercentage,
         'femalePercentage': femalePercentage,
@@ -122,10 +112,10 @@ class PokemonDetails {
         'weaknesses': _calculateWeaknesses(types),
       };
     } catch (e) {
+      print('Error detallado: $e');
       throw Exception('Error al obtener los datos: $e');
     }
   }
-
   List<String> _calculateWeaknesses(List<String> types) {
     final typeWeaknesses = {
       'normal': ['fighting'],

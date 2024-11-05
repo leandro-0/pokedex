@@ -23,11 +23,9 @@ class _PokemonDetailsState extends State<PokemonDetails>
     _tabController = TabController(length: 4, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final pkBasicInfo =
-          ModalRoute.of(context)!.settings.arguments as PokemonTile;
+      final pkBasicInfo = ModalRoute.of(context)!.settings.arguments as PokemonTile;
       setState(() {
-        backgroundColor = AppTheme.typeColors[pkBasicInfo.types.first] ??
-            Colors.green.shade300;
+        backgroundColor = AppTheme.typeColors[pkBasicInfo.types.first] ?? Colors.green.shade300;
       });
     });
   }
@@ -40,10 +38,11 @@ class _PokemonDetailsState extends State<PokemonDetails>
 
   String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
+
   @override
   Widget build(BuildContext context) {
-    final pkBasicInfo =
-        ModalRoute.of(context)!.settings.arguments as PokemonTile;
+    final pkBasicInfo = ModalRoute.of(context)!.settings.arguments as PokemonTile;
+
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(
@@ -86,8 +85,7 @@ class _PokemonDetailsState extends State<PokemonDetails>
               ),
               Text(
                 '#${pkBasicInfo.id.toString().padLeft(4, '0')}',
-                style: TextStyle(
-                    fontSize: 16, color: Colors.black.withOpacity(0.4)),
+                style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.4)),
               ),
               SizedBox(height: 10),
               Expanded(
@@ -132,6 +130,11 @@ class _PokemonDetailsState extends State<PokemonDetails>
       ),
     );
   }
+
+  Widget _buildBaseStatsTab() {
+    return Center(child: Text('Base stats'));
+  }
+
   Widget _buildEvolutionTab() {
     return Center(child: Text('Evolution'));
   }

@@ -28,6 +28,23 @@ class EvolutionChain extends StatelessWidget {
         }
 
         final chain = snapshot.data as List<EvolutionEdge>;
+        if (chain.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'This Pokémon is so special that it has no evolution chain!',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
         return Expanded(
           child: ListView.separated(
             itemCount: chain.length,

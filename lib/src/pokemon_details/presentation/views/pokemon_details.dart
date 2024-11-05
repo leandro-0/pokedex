@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/evolution_chain.dart';
@@ -39,8 +40,6 @@ class _PokemonDetailsState extends State<PokemonDetails>
     super.dispose();
   }
 
-  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
-
   @override
   Widget build(BuildContext context) {
     final pkBasicInfo =
@@ -78,7 +77,7 @@ class _PokemonDetailsState extends State<PokemonDetails>
               ),
               SizedBox(height: 10),
               Text(
-                capitalize(pkBasicInfo.name),
+                Utils.capitalize(pkBasicInfo.name),
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,

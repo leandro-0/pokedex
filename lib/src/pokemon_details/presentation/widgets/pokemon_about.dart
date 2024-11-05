@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
-import 'package:pokedex/src/pokemon_details/presentation/models/about_info.dart';
-import 'package:pokedex/src/pokemon_details/presentation/repository/details_repository.dart';
+import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
+import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/about_heading.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/info_item.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_gender.dart';

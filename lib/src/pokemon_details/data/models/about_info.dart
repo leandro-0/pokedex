@@ -1,5 +1,5 @@
 import 'package:pokedex/core/utils/utils.dart';
-import 'package:pokedex/src/pokemon_details/presentation/models/egg_groups.dart';
+import 'package:pokedex/src/pokemon_details/data/models/egg_groups.dart';
 
 class AboutInfo {
   final String description;

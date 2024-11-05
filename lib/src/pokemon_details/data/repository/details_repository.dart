@@ -1,5 +1,5 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:pokedex/src/pokemon_details/presentation/models/about_info.dart';
+import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
 
 class DetailsRepository {
   static String get pokemonCompleteQuery => '''

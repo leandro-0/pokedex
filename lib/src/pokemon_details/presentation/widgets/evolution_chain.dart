@@ -45,29 +45,27 @@ class EvolutionChain extends StatelessWidget {
           );
         }
 
-        return Expanded(
-          child: ListView.separated(
-            itemCount: chain.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 10.0),
-            itemBuilder: (context, index) {
-              final edge = chain[index];
+        return ListView.separated(
+          itemCount: chain.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 10.0),
+          itemBuilder: (context, index) {
+            final edge = chain[index];
 
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _Chain(
-                    node: edge.from,
-                    isOriginalPk: pk.id == edge.from.pokemonTile.id,
-                  ),
-                  const Icon(Icons.arrow_forward_ios_rounded),
-                  _Chain(
-                    node: edge.to,
-                    isOriginalPk: pk.id == edge.to.pokemonTile.id,
-                  ),
-                ],
-              );
-            },
-          ),
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _Chain(
+                  node: edge.from,
+                  isOriginalPk: pk.id == edge.from.pokemonTile.id,
+                ),
+                const Icon(Icons.arrow_forward_ios_rounded),
+                _Chain(
+                  node: edge.to,
+                  isOriginalPk: pk.id == edge.to.pokemonTile.id,
+                ),
+              ],
+            );
+          },
         );
       },
     );

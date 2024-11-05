@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
-import 'package:pokedex/src/home/presentation/widgets/type_chip.dart';
+import 'package:pokedex/src/home/presentation/widgets/pokemon_types.dart';
 import 'package:pokedex/src/pokemon_details/presentation/views/pokemon_details.dart';
 
 class PokemonCard extends StatelessWidget {
@@ -79,11 +79,7 @@ class PokemonCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 5.0),
-                  Row(
-                    children: pk.types
-                        .map<Widget>((type) => TypeChip(type: type))
-                        .toList(),
-                  ),
+                  PokemonTypes(types: pk.types),
                 ],
               ),
               const Expanded(child: SizedBox()),

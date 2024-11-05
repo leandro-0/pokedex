@@ -4,8 +4,9 @@ import 'package:pokedex/core/theme/app_theme.dart';
 
 class TypeChip extends StatelessWidget {
   final String type;
+  final Axis direction;
 
-  const TypeChip({super.key, required this.type});
+  const TypeChip({super.key, required this.type, required this.direction});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,10 @@ class TypeChip extends StatelessWidget {
         horizontal: 6.0,
         vertical: 3.0,
       ),
-      margin: const EdgeInsets.only(right: 7.0),
+      margin: EdgeInsets.only(
+        right: direction == Axis.horizontal ? 5.0 : 0.0,
+        bottom: direction == Axis.vertical ? 5.0 : 0.0,
+      ),
       decoration: BoxDecoration(
         color: AppTheme.typeChipColors[type],
         borderRadius: BorderRadius.circular(5.0),

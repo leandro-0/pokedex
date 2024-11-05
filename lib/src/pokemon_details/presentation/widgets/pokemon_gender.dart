@@ -13,34 +13,61 @@ class PokemonGender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            'Gender: ',
+            style: TextStyle(
+              color: Colors.grey[800],
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 10.0),
+          _GenderItem(
+            percentage: malePercentage,
+            iconColor: Colors.blue,
+            iconData: FontAwesomeIcons.mars,
+          ),
+          const SizedBox(width: 12.0),
+          _GenderItem(
+            percentage: femalePercentage,
+            iconColor: Colors.pink,
+            iconData: FontAwesomeIcons.venus,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GenderItem extends StatelessWidget {
+  const _GenderItem({
+    required this.percentage,
+    required this.iconData,
+    required this.iconColor,
+  });
+
+  final IconData iconData;
+  final double percentage;
+  final Color iconColor;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Text(
-          'Gender: ',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
-        ),
-        const SizedBox(width: 10),
-        Row(
-          children: [
-            const Icon(FontAwesomeIcons.mars, color: Colors.blue, size: 16),
-            const SizedBox(width: 4),
-            Text(
-              '${malePercentage.toStringAsFixed(1)}%',
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ],
-        ),
-        const SizedBox(width: 12),
-        Row(
-          children: [
-            const Icon(FontAwesomeIcons.venus, color: Colors.pink, size: 16),
-            const SizedBox(width: 4),
-            Text(
-              '${femalePercentage.toStringAsFixed(1)}%',
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ],
+        Icon(iconData, color: iconColor, size: 16.0),
+        const SizedBox(width: 4.0),
+        Text(
+          '${percentage.toStringAsFixed(1)}%',
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 16.0,
+          ),
         ),
       ],
     );

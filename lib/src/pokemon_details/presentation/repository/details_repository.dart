@@ -1,16 +1,9 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/pokemon_details/presentation/models/about_info.dart';
 
-class PokemonDetails {
-  final GraphQLClient client;
-
-  PokemonDetails()
-      : client = GraphQLClient(
-          link: HttpLink('https://beta.pokeapi.co/graphql/v1beta'), 
-          cache: GraphQLCache(),
-        );
-
+class DetailsRepository {
   static String get pokemonCompleteQuery => '''
-  query getPokemonComplete(\$id: Int!) {
+  query getPokemonAboutInfo(\$id: Int!) {
     pokemon_v2_pokemonspecies(where: {id: {_eq: \$id}}) {
       is_legendary
       is_mythical
@@ -19,21 +12,9 @@ class PokemonDetails {
       pokemon_v2_pokemonhabitat {
         name
       }
-      evolution_chain_id
       pokemon_v2_pokemons {
         height
         weight
-        pokemon_v2_pokemonstats {
-          base_stat
-          pokemon_v2_stat {
-            name
-          }
-        }
-        pokemon_v2_pokemontypes {
-          pokemon_v2_type {
-            name
-          }
-        }
       }
       pokemon_v2_pokemonegggroups {
         pokemon_v2_egggroup {
@@ -50,73 +31,24 @@ class PokemonDetails {
   }
 ''';
 
-  Future<Map<String, dynamic>> getPokemonDescription(int pokemonId) async {
-    try {
-      final QueryOptions options = QueryOptions(
-        document: gql(pokemonCompleteQuery),
-        variables: {
-          'id': pokemonId,
-        },
-      );
+  static Future<AboutInfo> getPokemonDescription(
+    GraphQLClient client,
+    int pokemonId,
+  ) async {
+    final QueryResult result = await client.query(QueryOptions(
+      document: gql(pokemonCompleteQuery),
+      variables: {'id': pokemonId},
+    ));
 
-      final QueryResult result = await client.query(options);
+    if (result.hasException) throw Exception(result.exception.toString());
 
-      if (result.hasException) {
-        throw Exception(result.exception.toString());
-      }
+    final data = result.data?['pokemon_v2_pokemonspecies']?[0];
+    if (data == null) throw Exception('This Pokémon has no data.');
 
-      final data = result.data?['pokemon_v2_pokemonspecies']?[0];
-      if (data == null) {
-        throw Exception('No se encontraron datos para este Pokémon');
-      }
-
-      final pokemon = data['pokemon_v2_pokemons']?[0];
-      final eggGroups = data['pokemon_v2_pokemonegggroups']
-          ?.map((e) => e['pokemon_v2_egggroup']['name'].toString())
-          ?.toList()
-          ?.cast<String>() ?? [];
-
-      final genderRate = data['gender_rate'];
-      final malePercentage = genderRate == -1 ? 0 : (8 - genderRate) / 8 * 100;
-      final femalePercentage = genderRate == -1 ? 0 : genderRate / 8 * 100;
-
-      final types = pokemon?['pokemon_v2_pokemontypes']
-          ?.map((e) => e['pokemon_v2_type']['name'].toString())
-          ?.toList()
-          ?.cast<String>() ?? [];
-
-      final stats = pokemon?['pokemon_v2_pokemonstats']
-          ?.map((e) => {
-                'name': e['pokemon_v2_stat']['name'],
-                'base_stat': e['base_stat'],
-              })
-          ?.toList()
-          ?.cast<Map<String, dynamic>>() ?? [];
-
-      return {
-        'description': data['pokemon_v2_pokemonspeciesflavortexts']?[0]
-                ?['flavor_text'] ??
-            'No hay descripción disponible',
-        'isLegendary': data['is_legendary'] ?? false,
-        'isMythical': data['is_mythical'] ?? false,
-        'habitat': data['pokemon_v2_pokemonhabitat']?['name'] ?? 'unknown',
-        'generation': data['pokemon_v2_generation']?['name'] ?? 'unknown',
-        'height': pokemon?['height'] ?? 0,
-        'weight': pokemon?['weight'] ?? 0,
-        'types': types,
-        'eggGroups': eggGroups,
-        'malePercentage': malePercentage,
-        'femalePercentage': femalePercentage,
-        'hatchCounter': data['hatch_counter'] ?? 0,
-        'stats': stats,
-        'weaknesses': _calculateWeaknesses(types),
-      };
-    } catch (e) {
-      print('Error detallado: $e');
-      throw Exception('Error al obtener los datos: $e');
-    }
+    return AboutInfo.fromJson(data);
   }
-  List<String> _calculateWeaknesses(List<String> types) {
+
+  static List<String> _calculateWeaknesses(List<String> types) {
     final typeWeaknesses = {
       'normal': ['fighting'],
       'fire': ['water', 'rock', 'ground'],

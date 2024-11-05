@@ -1,154 +1,102 @@
 import 'package:flutter/material.dart';
-import '../repository/details_repository.dart';
-import 'weight_height_detail.dart'; // Asegúrate de importar el nuevo widget
-import 'pokemon_gender.dart'; // Asegúrate de importar el nuevo widget
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
+import 'package:pokedex/src/pokemon_details/presentation/models/about_info.dart';
+import 'package:pokedex/src/pokemon_details/presentation/repository/details_repository.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/about_heading.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/info_item.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_gender.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/weight_height_detail.dart';
 
 class PokemonAbout extends StatefulWidget {
-  final int pokemonId;
+  final PokemonTile pkBasicInfo;
 
-  const PokemonAbout({
-    super.key,
-    required this.pokemonId,
-  });
+  const PokemonAbout({super.key, required this.pkBasicInfo});
 
   @override
   State<PokemonAbout> createState() => _PokemonAboutState();
 }
 
 class _PokemonAboutState extends State<PokemonAbout> {
-  final _pokemonService = PokemonDetails();
-  Map<String, dynamic>? _pokemonData;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPokemonData();
-  }
-
-  Future<void> _loadPokemonData() async {
-    try {
-      setState(() => _isLoading = true);
-      final data = await _pokemonService.getPokemonDescription(widget.pokemonId);
-      setState(() {
-        _pokemonData = data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _pokemonData = null;
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_pokemonData == null) {
-      return const Center(child: Text('No se pudieron cargar los datos'));
-    }
-
-    final heightInMeters = _pokemonData!['height'] / 10;
-    final weightInKilograms = _pokemonData!['weight'] / 10;
-    final types = _pokemonData!['types'];
-    final description = _pokemonData!['description'].replaceAll('\n', ' ').replaceAll('\f', ' ');
+    final GraphQLClient client = GraphQLProvider.of(context).value;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        const SizedBox(height: 16),
-        Text(
-          description,
-          style: const TextStyle(fontSize: 16),
+      child: FutureBuilder(
+        future: DetailsRepository.getPokemonDescription(
+          client,
+          widget.pkBasicInfo.id,
         ),
-        const SizedBox(height: 16),
-        Row(
-          children: types
-              .map<Widget>(
-                (type) => Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5.0,
-                    vertical: 2.0,
-                  ),
-                  margin: const EdgeInsets.only(right: 5.0),
-                  decoration: BoxDecoration( 
-                    color: Colors.black.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Text(
-                    type,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          final about = snapshot.data as AboutInfo;
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16.0),
+                Text(
+                  about.description,
+                  style: const TextStyle(fontSize: 16.0),
+                ),
+                if (about.isLegendary || about.isMythical) ...[
+                  const SizedBox(height: 16.0),
+                  Text(
+                    about.isLegendary
+                        ? '⭐ Pokémon Legendario'
+                        : '✨ Pokémon Mítico',
                     style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 12.0,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
                     ),
                   ),
+                ],
+                const AboutHeading(text: 'Physical Traits'),
+                DetailCard(
+                  title1: 'Height',
+                  value1: '${about.height.toStringAsFixed(1)} m',
+                  title2: 'Weight',
+                  value2: '${about.weight.toStringAsFixed(1)} kg',
                 ),
-              )
-              .toList(),
-        ),
-          const SizedBox(height: 16),
-          if (_pokemonData!['isLegendary'] || _pokemonData!['isMythical'])
-            Text(
-              _pokemonData!['isLegendary'] ? '⭐ Pokémon Legendario' : '✨ Pokémon Mítico',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.amber,
-              ),
-            ),
-          DetailCard(
-            title1: 'Height',
-            value1: '${heightInMeters.toStringAsFixed(1)} m',
-            title2: 'Weight',
-            value2: '${weightInKilograms.toStringAsFixed(1)} kg',
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Breeding',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          PokemonGender(
-            malePercentage: _pokemonData!['malePercentage'],
-            femalePercentage: _pokemonData!['femalePercentage'],
-          ),
-          const SizedBox(height: 16),
-          Text.rich(
-            TextSpan(
-              children: [
-                const TextSpan(
-                  text: 'Egg Groups: ',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                const AboutHeading(text: 'Origins'),
+                InfoItem(
+                  title: 'Habitat',
+                  value: about.habitat,
                 ),
-                TextSpan(
-                  text: (_pokemonData!['eggGroups'] as List).map((e) => e.toString().split(' ').map((str) => str[0].toUpperCase() + str.substring(1)).join(' ')).join(', '),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                InfoItem(
+                  title: 'Generation',
+                  value: about.generation,
+                ),
+                const AboutHeading(text: 'Breeding'),
+                PokemonGender(
+                  malePercentage: about.malePercentage,
+                  femalePercentage: about.femalePercentage,
+                ),
+                InfoItem(
+                  title: 'Egg Groups',
+                  value: about.eggGroups.toString(),
+                ),
+                InfoItem(
+                  title: 'Egg Cycle',
+                  value: about.eggCycle.toString(),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Text.rich(
-            TextSpan(
-              children: [
-                const TextSpan(
-                  text: 'Egg Cycle: ',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                TextSpan(
-                  text: '${_pokemonData!['hatchCounter']}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

@@ -16,37 +16,45 @@ class DetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Container(
+      margin: const EdgeInsets.only(top: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _Detail(title: title1, value: value1),
+          _Detail(title: title2, value: value2),
+        ],
+      ),
+    );
+  }
+}
+
+class _Detail extends StatelessWidget {
+  const _Detail({
+    required this.title,
+    required this.value,
+  });
+
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title1,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              value1,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ],
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[800],
+          ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title2,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              value2,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ],
+        Text(
+          value,
+          style: const TextStyle(fontSize: 16.0),
         ),
       ],
     );
   }
 }
-

@@ -23,13 +23,6 @@ class _PokemonDetailsState extends State<PokemonDetails>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final pkBasicInfo = ModalRoute.of(context)!.settings.arguments as PokemonTile;
-      setState(() {
-        backgroundColor = AppTheme.typeColors[pkBasicInfo.types.first] ?? Colors.green.shade300;
-      });
-    });
   }
 
   @override
@@ -38,59 +31,65 @@ class _PokemonDetailsState extends State<PokemonDetails>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final pkBasicInfo = ModalRoute.of(context)!.settings.arguments as PokemonTile;
+    final pkBasicInfo =
+        ModalRoute.of(context)!.settings.arguments as PokemonTile;
+    final backgroundColor =
+        AppTheme.typeColors[pkBasicInfo.types.first] ?? Colors.grey;
+    final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(
         children: [
           Positioned(
-            top: 40,
-            left: 10,
+            top: 40.0,
+            left: 10.0,
             child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
           Positioned(
-            top: 40,
-            right: 10,
+            top: 40.0,
+            right: 10.0,
             child: IconButton(
-              icon: Icon(Icons.favorite_border, color: Colors.white),
+              icon: const Icon(Icons.favorite_border, color: Colors.white),
               onPressed: () {},
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 80),
+              const SizedBox(height: 80.0),
               Hero(
                 tag: 'card-${pkBasicInfo.id}',
                 child: Image.network(
                   pkBasicInfo.spriteUrl,
-                  height: 180,
+                  height: size.height * 0.2,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10.0),
               Text(
                 Utils.capitalize(pkBasicInfo.name),
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 32.0,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.white.withOpacity(0.9),
                 ),
               ),
               Text(
                 '#${pkBasicInfo.id.toString().padLeft(4, '0')}',
-                style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.4)),
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white.withOpacity(0.8),
+                ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10.0),
               Expanded(
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
@@ -99,10 +98,13 @@ class _PokemonDetailsState extends State<PokemonDetails>
                   ),
                   child: Column(
                     children: [
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10.0),
                       TabBar(
+                        labelColor: backgroundColor,
+                        dividerColor: Colors.transparent,
+                        indicatorColor: backgroundColor.withOpacity(0.99),
                         controller: _tabController,
-                        tabs: [
+                        tabs: const [
                           Tab(text: 'About'),
                           Tab(text: 'Stats'),
                           Tab(text: 'Evolution'),
@@ -113,10 +115,10 @@ class _PokemonDetailsState extends State<PokemonDetails>
                         child: TabBarView(
                           controller: _tabController,
                           children: [
-                            PokemonAbout(pokemonId: pkBasicInfo.id),
-                            Center(child: Text('Stats')),
+                            PokemonAbout(pkBasicInfo: pkBasicInfo),
+                            const Center(child: Text('Stats')),
                             EvolutionChain(pk: pkBasicInfo),
-                            Center(child: Text('Moves')),
+                            const Center(child: Text('Moves')),
                           ],
                         ),
                       ),
@@ -129,13 +131,5 @@ class _PokemonDetailsState extends State<PokemonDetails>
         ],
       ),
     );
-  }
-
-  Widget _buildEvolutionTab() {
-    return Center(child: Text('Evolution'));
-  }
-
-  Widget _buildMovesTab() {
-    return Center(child: Text('Moves'));
   }
 }

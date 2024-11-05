@@ -23,7 +23,7 @@ class PokemonGender extends StatelessWidget {
         const SizedBox(width: 10),
         Row(
           children: [
-            Icon(FontAwesomeIcons.mars, color: Colors.blue, size: 16),
+            const Icon(FontAwesomeIcons.mars, color: Colors.blue, size: 16),
             const SizedBox(width: 4),
             Text(
               '${malePercentage.toStringAsFixed(1)}%',
@@ -34,7 +34,7 @@ class PokemonGender extends StatelessWidget {
         const SizedBox(width: 12),
         Row(
           children: [
-            Icon(FontAwesomeIcons.venus, color: Colors.pink, size: 16),
+            const Icon(FontAwesomeIcons.venus, color: Colors.pink, size: 16),
             const SizedBox(width: 4),
             Text(
               '${femalePercentage.toStringAsFixed(1)}%',

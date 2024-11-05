@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/evolution_chain.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_about.dart';
 
 class PokemonDetails extends StatefulWidget {
@@ -117,7 +118,7 @@ class _PokemonDetailsState extends State<PokemonDetails>
                           children: [
                             PokemonAbout(pokemonId: pkBasicInfo.id),
                             Center(child: Text('Stats')),
-                            Center(child: Text('Evolution')),
+                            EvolutionChain(pk: pkBasicInfo),
                             Center(child: Text('Moves')),
                           ],
                         ),
@@ -132,6 +133,7 @@ class _PokemonDetailsState extends State<PokemonDetails>
       ),
     );
   }
+
   Widget _buildEvolutionTab() {
     return Center(child: Text('Evolution'));
   }

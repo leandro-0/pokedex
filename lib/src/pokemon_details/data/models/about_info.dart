@@ -49,7 +49,9 @@ class AboutInfo {
       generation: (json['pokemon_v2_generation']['name'] as String)
           .replaceFirst('generation-', '')
           .toUpperCase(),
-      habitat: Utils.capitalize(json['pokemon_v2_pokemonhabitat']['name']),
+      habitat: Utils.capitalize(
+        json['pokemon_v2_pokemonhabitat']?['name'] ?? 'Unknown',
+      ),
     );
   }
 }

@@ -109,7 +109,7 @@ class _PokemonAboutState extends State<PokemonAbout> {
             value2: '${weightInKilograms.toStringAsFixed(1)} kg',
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Breeding',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
@@ -127,7 +127,7 @@ class _PokemonAboutState extends State<PokemonAbout> {
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 TextSpan(
-                  text: '${(_pokemonData!['eggGroups'] as List).map((e) => e.toString().split(' ').map((str) => str[0].toUpperCase() + str.substring(1)).join(' ')).join(', ')}',
+                  text: (_pokemonData!['eggGroups'] as List).map((e) => e.toString().split(' ').map((str) => str[0].toUpperCase() + str.substring(1)).join(' ')).join(', '),
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ],

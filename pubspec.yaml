@@ -14,6 +14,7 @@ dependencies:
   hive_flutter: ^1.1.0
   font_awesome_flutter: ^10.8.0
   skeletonizer: ^1.4.2
+  just_audio: ^0.9.42
 
 dev_dependencies:
   flutter_test:

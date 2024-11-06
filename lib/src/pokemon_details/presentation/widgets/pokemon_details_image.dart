@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_types.dart';
+import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
 
 class PokemonDetailsImage extends StatefulWidget {
   final PokemonTile pkBasicInfo;
@@ -14,6 +17,7 @@ class PokemonDetailsImage extends StatefulWidget {
 
 class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
   bool _isShiny = false;
+  final player = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +108,36 @@ class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
                 color: Colors.white.withOpacity(0.8),
               ),
             ),
+          ),
+          FutureBuilder(
+            future: DetailsRepository.getPokemonCry(
+              GraphQLProvider.of(context).value,
+              widget.pkBasicInfo.id,
+            ),
+            builder: (context, snapshot) {
+              return Positioned(
+                left: 10.0,
+                bottom: 60.0,
+                child: AnimatedOpacity(
+                  opacity: !snapshot.hasData ||
+                          snapshot.connectionState != ConnectionState.done
+                      ? 0.0
+                      : 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: IconButton(
+                    tooltip: 'Play cry',
+                    onPressed: () async {
+                      await player.setUrl(snapshot.data as String);
+                      await player.play();
+                    },
+                    icon: Icon(
+                      Icons.graphic_eq_rounded,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

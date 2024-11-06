@@ -161,4 +161,32 @@ class DetailsRepository {
 
     return mappedForms;
   }
+
+  static Future<String?> getPokemonCry(GraphQLClient client, int id) async {
+    final query = gql(r'''
+      query getPokemonCry($id: Int) {
+        pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
+          pokemon_v2_pokemoncries {
+            cries(path: "latest")
+          }
+        }
+      }
+    ''');
+
+    final response = await client.query(QueryOptions(
+      document: query,
+      variables: {'id': id},
+    ));
+
+    if (response.data?['pokemon_v2_pokemon'] == null) {
+      throw Exception('Failed to load data');
+    }
+
+    try {
+      return response.data?['pokemon_v2_pokemon'][0]?['pokemon_v2_pokemoncries']
+          ?[0]['cries'];
+    } catch (e) {
+      return null;
+    }
+  }
 }

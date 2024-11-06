@@ -1,6 +1,7 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
+import 'package:pokedex/src/pokemon_details/data/models/pokemon_form.dart';
 
 class DetailsRepository {
   static String get pokemonCompleteQuery => '''
@@ -116,5 +117,44 @@ class DetailsRepository {
     }
 
     return PokemonTile.fromJson(response.data?['pokemon_v2_pokemon'][0]);
+  }
+
+  static Future<List<PokemonForm>> getPokemonForms(
+      GraphQLClient client, int id) async {
+    final query = gql(r'''
+      query GetPokemonForms($id: Int) {
+        pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
+          pokemon_v2_pokemonspecy {
+            pokemon_v2_pokemons {
+              pokemon_v2_pokemonforms {
+                name
+                pokemon_v2_pokemonformsprites {
+                  sprites(path: "front_default")
+                }
+                form_order
+              }
+            }
+          }
+        }
+      }
+    ''');
+
+    final response = await client.query(QueryOptions(
+      document: query,
+      variables: {'id': id},
+    ));
+
+    if (response.data?['pokemon_v2_pokemon'] == null) {
+      throw Exception('Failed to load data');
+    }
+
+    final forms = response.data?['pokemon_v2_pokemon'][0]
+        ['pokemon_v2_pokemonspecy']['pokemon_v2_pokemons'];
+
+    return forms
+        .map<PokemonForm>(
+          (e) => PokemonForm.fromJson(e['pokemon_v2_pokemonforms'][0]),
+        )
+        .toList();
   }
 }

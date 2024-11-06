@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/evolution_chain.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_about.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_forms.dart';
 
 class DetailsTabView extends StatefulWidget {
   const DetailsTabView({
@@ -23,7 +24,7 @@ class _DetailsTabViewState extends State<DetailsTabView>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -54,8 +55,9 @@ class _DetailsTabViewState extends State<DetailsTabView>
               tabs: const [
                 Tab(text: 'About'),
                 Tab(text: 'Stats'),
-                Tab(text: 'Evolution'),
+                Tab(text: 'Evos'),
                 Tab(text: 'Moves'),
+                Tab(text: 'Forms'),
               ],
             ),
             Expanded(
@@ -66,6 +68,7 @@ class _DetailsTabViewState extends State<DetailsTabView>
                   const Center(child: Text('Stats')),
                   EvolutionChain(id: widget.id),
                   const Center(child: Text('Moves')),
+                  PokemonForms(id: widget.id),
                 ],
               ),
             ),

@@ -216,6 +216,13 @@ class DetailsRepository {
                     }
                   }
                 }
+                pokemon_v2_pokemonspecies {
+                  pokemon_v2_pokemonevolutions {
+                    pokemon_v2_evolutiontrigger {
+                      name
+                    }
+                  }
+                }
               }
             }
           }

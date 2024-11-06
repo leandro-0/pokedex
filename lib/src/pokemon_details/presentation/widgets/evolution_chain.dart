@@ -4,7 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/evolution_edge.dart';
 import 'package:pokedex/src/home/data/models/pokemon_node.dart';
-import 'package:pokedex/src/home/data/repository/home_repository.dart';
+import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
 import 'package:pokedex/src/pokemon_details/presentation/views/details_screen.dart';
 
 class EvolutionChain extends StatelessWidget {
@@ -15,7 +15,7 @@ class EvolutionChain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: HomeRepository.getEvolutionChain(
+      future: DetailsRepository.getEvolutionChain(
         GraphQLProvider.of(context).value,
         id,
       ),

@@ -47,6 +47,7 @@ class EvolutionChain extends StatelessWidget {
         return ListView.separated(
           itemCount: chain.length,
           separatorBuilder: (context, index) => const SizedBox(height: 10.0),
+          padding: const EdgeInsets.symmetric(vertical: 30.0),
           itemBuilder: (context, index) {
             final edge = chain[index];
 

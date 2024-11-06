@@ -91,6 +91,11 @@ class DetailsRepository {
           name
           pokemon_v2_pokemonsprites {
             sprites(path: "other.official-artwork.front_default")
+            pokemon_v2_pokemon {
+              pokemon_v2_pokemonsprites {
+                sprites(path: "other.official-artwork.front_shiny")
+              }
+            }
           }
           pokemon_v2_pokemontypes {
             pokemon_v2_type {

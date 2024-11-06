@@ -3,19 +3,23 @@ import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_types.dart';
 
-class PokemonDetailsImage extends StatelessWidget {
+class PokemonDetailsImage extends StatefulWidget {
   final PokemonTile pkBasicInfo;
 
   const PokemonDetailsImage({super.key, required this.pkBasicInfo});
 
   @override
+  State<PokemonDetailsImage> createState() => _PokemonDetailsImageState();
+}
+
+class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
+  bool _isShiny = false;
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final imgSize = size.height * 0.2;
-    final image = Image.network(
-      pkBasicInfo.spriteUrl,
-      height: imgSize,
-    );
+
     return SizedBox(
       height: size.height * 0.37,
       width: double.infinity,
@@ -41,18 +45,37 @@ class PokemonDetailsImage extends StatelessWidget {
             right: 20.0,
             bottom: 10.0,
             child: PokemonTypes(
-              types: pkBasicInfo.types,
+              types: widget.pkBasicInfo.types,
               direction: Axis.vertical,
             ),
           ),
           Align(
             alignment: Alignment.center,
-            child: Hero(tag: 'card-${pkBasicInfo.id}', child: image),
+            child: Hero(
+              tag: 'card-${widget.pkBasicInfo.id}',
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 225),
+                switchInCurve: Curves.easeIn,
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  );
+                },
+                child: Image.network(
+                  key: ValueKey(_isShiny),
+                  !_isShiny
+                      ? widget.pkBasicInfo.spriteUrl
+                      : widget.pkBasicInfo.shinySpriteUrl!,
+                  height: imgSize,
+                ),
+              ),
+            ),
           ),
           Align(
             alignment: const Alignment(0.0, 0.75),
             child: Text(
-              Utils.capitalize(pkBasicInfo.name),
+              Utils.capitalize(widget.pkBasicInfo.name),
               style: TextStyle(
                 fontSize: 32.0,
                 fontWeight: FontWeight.bold,
@@ -63,9 +86,21 @@ class PokemonDetailsImage extends StatelessWidget {
           Align(
             alignment: const Alignment(0.0, 0.87),
             child: Text(
-              '#${pkBasicInfo.id.toString().padLeft(4, '0')}',
+              '#${widget.pkBasicInfo.id.toString().padLeft(4, '0')}',
               style: TextStyle(
                 fontSize: 16.0,
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 10.0,
+            bottom: 10.0,
+            child: IconButton(
+              tooltip: 'Shiny version',
+              onPressed: () => setState(() => _isShiny = !_isShiny),
+              icon: Icon(
+                Icons.auto_awesome_rounded,
                 color: Colors.white.withOpacity(0.8),
               ),
             ),

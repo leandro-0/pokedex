@@ -28,7 +28,7 @@ class PokemonForms extends StatelessWidget {
         return ListView.separated(
           itemCount: forms.length,
           separatorBuilder: (context, index) => const SizedBox(height: 10.0),
-          padding: const EdgeInsets.symmetric(vertical: 30.0),
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
           itemBuilder: (context, index) {
             final form = forms[index];
 

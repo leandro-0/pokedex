@@ -126,7 +126,7 @@ class DetailsRepository {
         pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
           pokemon_v2_pokemonspecy {
             pokemon_v2_pokemons {
-              pokemon_v2_pokemonforms {
+              pokemon_v2_pokemonforms(order_by: {form_order: asc}) {
                 name
                 pokemon_v2_pokemonformsprites {
                   sprites(path: "front_default")
@@ -150,11 +150,15 @@ class DetailsRepository {
 
     final forms = response.data?['pokemon_v2_pokemon'][0]
         ['pokemon_v2_pokemonspecy']['pokemon_v2_pokemons'];
+    final mappedForms = <PokemonForm>[];
 
-    return forms
-        .map<PokemonForm>(
-          (e) => PokemonForm.fromJson(e['pokemon_v2_pokemonforms'][0]),
-        )
-        .toList();
+    for (final form in forms) {
+      final formList = form['pokemon_v2_pokemonforms'];
+      for (final form in formList) {
+        mappedForms.add(PokemonForm.fromJson(form));
+      }
+    }
+
+    return mappedForms;
   }
 }

@@ -102,7 +102,8 @@ class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
             bottom: 10.0,
             child: IconButton(
               tooltip: 'Shiny version',
-              onPressed: () => setState(() => _isShiny = !_isShiny),
+              onPressed: () => setState(() => _isShiny =
+                  !_isShiny && widget.pkBasicInfo.shinySpriteUrl != null),
               icon: Icon(
                 Icons.auto_awesome_rounded,
                 color: Colors.white.withOpacity(0.8),

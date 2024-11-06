@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/about_heading.dart';
@@ -9,9 +8,9 @@ import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_gender.
 import 'package:pokedex/src/pokemon_details/presentation/widgets/weight_height_detail.dart';
 
 class PokemonAbout extends StatefulWidget {
-  final PokemonTile pkBasicInfo;
+  final int id;
 
-  const PokemonAbout({super.key, required this.pkBasicInfo});
+  const PokemonAbout({super.key, required this.id});
 
   @override
   State<PokemonAbout> createState() => _PokemonAboutState();
@@ -27,7 +26,7 @@ class _PokemonAboutState extends State<PokemonAbout> {
       child: FutureBuilder(
         future: DetailsRepository.getPokemonDescription(
           client,
-          widget.pkBasicInfo.id,
+          widget.id,
         ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

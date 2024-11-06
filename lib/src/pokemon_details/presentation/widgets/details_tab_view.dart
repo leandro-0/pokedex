@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/evolution_chain.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_about.dart';
 
@@ -7,11 +6,11 @@ class DetailsTabView extends StatefulWidget {
   const DetailsTabView({
     super.key,
     required this.backgroundColor,
-    required this.pkBasicInfo,
+    required this.id,
   });
 
   final Color backgroundColor;
-  final PokemonTile pkBasicInfo;
+  final int id;
 
   @override
   State<DetailsTabView> createState() => _DetailsTabViewState();
@@ -63,9 +62,9 @@ class _DetailsTabViewState extends State<DetailsTabView>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  PokemonAbout(pkBasicInfo: widget.pkBasicInfo),
+                  PokemonAbout(id: widget.id),
                   const Center(child: Text('Stats')),
-                  EvolutionChain(pk: widget.pkBasicInfo),
+                  EvolutionChain(id: widget.id),
                   const Center(child: Text('Moves')),
                 ],
               ),

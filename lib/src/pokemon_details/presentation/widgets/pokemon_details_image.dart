@@ -12,7 +12,10 @@ class PokemonDetailsImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final imgSize = size.height * 0.2;
-
+    final image = Image.network(
+      pkBasicInfo.spriteUrl,
+      height: imgSize,
+    );
     return SizedBox(
       height: size.height * 0.37,
       width: double.infinity,
@@ -44,13 +47,7 @@ class PokemonDetailsImage extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.center,
-            child: Hero(
-              tag: 'card-${pkBasicInfo.id}',
-              child: Image.network(
-                pkBasicInfo.spriteUrl,
-                height: imgSize,
-              ),
-            ),
+            child: Hero(tag: 'card-${pkBasicInfo.id}', child: image),
           ),
           Align(
             alignment: const Alignment(0.0, 0.75),

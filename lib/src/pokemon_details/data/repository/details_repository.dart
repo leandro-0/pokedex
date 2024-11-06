@@ -1,4 +1,5 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
 
 class DetailsRepository {
@@ -77,5 +78,38 @@ class DetailsRepository {
     }
 
     return weaknesses.toList();
+  }
+
+  static Future<PokemonTile> getPokemonInfo(
+    GraphQLClient client,
+    int id,
+  ) async {
+    final query = gql(r'''
+      query pokemonsList($id: Int) {
+        pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
+          id
+          name
+          pokemon_v2_pokemonsprites {
+            sprites(path: "other.official-artwork.front_default")
+          }
+          pokemon_v2_pokemontypes {
+            pokemon_v2_type {
+              name
+            }
+          }
+        }
+      }
+    ''');
+
+    final response = await client.query(QueryOptions(
+      document: query,
+      variables: {'id': id},
+    ));
+
+    if (response.data?['pokemon_v2_pokemon'] == null) {
+      throw Exception('Failed to load pokemons');
+    }
+
+    return PokemonTile.fromJson(response.data?['pokemon_v2_pokemon'][0]);
   }
 }

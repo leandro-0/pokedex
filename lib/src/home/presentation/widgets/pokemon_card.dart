@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_types.dart';
-import 'package:pokedex/src/pokemon_details/presentation/views/pokemon_details.dart';
+import 'package:pokedex/src/pokemon_details/presentation/views/details_screen.dart';
 
 class PokemonCard extends StatelessWidget {
   final PokemonTile pk;
@@ -22,7 +22,7 @@ class PokemonCard extends StatelessWidget {
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(
           context,
-          PokemonDetails.routeName,
+          DetailsScreen.routeName,
           arguments: pk,
         ),
         child: Container(

@@ -4,21 +4,20 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/evolution_edge.dart';
 import 'package:pokedex/src/home/data/models/pokemon_node.dart';
-import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/data/repository/home_repository.dart';
-import 'package:pokedex/src/pokemon_details/presentation/views/pokemon_details.dart';
+import 'package:pokedex/src/pokemon_details/presentation/views/details_screen.dart';
 
 class EvolutionChain extends StatelessWidget {
-  final PokemonTile pk;
+  final int id;
 
-  const EvolutionChain({super.key, required this.pk});
+  const EvolutionChain({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: HomeRepository.getEvolutionChain(
         GraphQLProvider.of(context).value,
-        pk.id,
+        id,
       ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -56,12 +55,12 @@ class EvolutionChain extends StatelessWidget {
               children: [
                 _Chain(
                   node: edge.from,
-                  isOriginalPk: pk.id == edge.from.pokemonTile.id,
+                  isOriginalPk: id == edge.from.pokemonTile.id,
                 ),
                 const Icon(Icons.arrow_forward_ios_rounded),
                 _Chain(
                   node: edge.to,
-                  isOriginalPk: pk.id == edge.to.pokemonTile.id,
+                  isOriginalPk: id == edge.to.pokemonTile.id,
                 ),
               ],
             );
@@ -86,9 +85,9 @@ class _Chain extends StatelessWidget {
       onTap: () {
         if (isOriginalPk) return;
 
-        Navigator.pushNamed(
+        Navigator.pushReplacementNamed(
           context,
-          PokemonDetails.routeName,
+          DetailsScreen.routeName,
           arguments: node.pokemonTile,
         );
       },

@@ -330,7 +330,7 @@ class DetailsRepository {
 
     final Map<String, double> combinedMultipliers = {};
     final types = result.data!['pokemon_v2_pokemontype'] as List;
-    final pokemonTypes = types
+    types
         .map((t) => t['pokemon_v2_type']['name'].toString().toLowerCase())
         .toList();
 

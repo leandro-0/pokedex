@@ -83,7 +83,8 @@ class _PokemonStatsState extends State<PokemonStats>
                       animation: _animation,
                       label: orderedStatLabels[index],
                       value: stats[index]['base_stat'] as int,
-                      color: _getStatColor(stats[index]['base_stat'] as int),
+                      color: _getStatColor(stats[index]['base_stat'] as int,
+                          orderedStatLabels[index]),
                     ),
                   ),
                   StatItem(
@@ -140,9 +141,28 @@ class _PokemonStatsState extends State<PokemonStats>
     );
   }
 
-  Color _getStatColor(int value) {
-    if (value < 50) return Colors.red;
-    if (value < 70) return Colors.orange;
-    return Colors.teal;
+  Color _getStatColor(int value, [String? statLabel]) {
+    if (statLabel == null) {
+      if (value < 50) return Colors.red;
+      if (value < 70) return Colors.orange;
+      return Colors.teal;
+    }
+
+    switch (statLabel) {
+      case 'Hp':
+        return const Color(0xFFFF0000);
+      case 'Attack':
+        return const Color(0xFFF08030);
+      case 'Defense':
+        return const Color(0xFFF8D030);
+      case 'Sp. Atk':
+        return const Color(0xFF6890F0);
+      case 'Sp. Def':
+        return const Color(0xFF78C850);
+      case 'Speed':
+        return const Color(0xFFF85888);
+      default:
+        return Colors.grey;
+    }
   }
 }

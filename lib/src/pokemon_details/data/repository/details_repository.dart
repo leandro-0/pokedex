@@ -266,8 +266,8 @@ class DetailsRepository {
     return edges;
   }
 
-    static Future<List<Map<String, dynamic>>> getPokemonStats(
-    GraphQLClient client, 
+  static Future<List<Map<String, dynamic>>> getPokemonStats(
+    GraphQLClient client,
     int id,
   ) async {
     const query = '''
@@ -294,6 +294,89 @@ class DetailsRepository {
         .map((stat) => {
               'name': stat['pokemon_v2_stat']['name'],
               'base_stat': stat['base_stat'],
+            })
+        .toList();
+  }
+
+  static Future<List<Map<String, dynamic>>> getPokemonWeaknesses(
+    GraphQLClient client,
+    int id,
+  ) async {
+    const query = '''
+    query GetPokemonWeaknesses(\$id: Int!) {
+      pokemon_v2_pokemontype(where: {pokemon_id: {_eq: \$id}}) {
+        pokemon_v2_type {
+          name
+          pokemon_v2_typeefficacies {
+            damage_factor
+            target_type_id
+            pokemon_v2_type {
+              name
+            }
+          }
+        }
+      }
+    }
+  ''';
+
+    final result = await client.query(QueryOptions(
+      document: gql(query),
+      variables: {'id': id},
+    ));
+
+    if (result.hasException) {
+      throw result.exception!;
+    }
+
+    final Map<String, double> combinedMultipliers = {};
+    final types = result.data!['pokemon_v2_pokemontype'] as List;
+    final pokemonTypes = types
+        .map((t) => t['pokemon_v2_type']['name'].toString().toLowerCase())
+        .toList();
+
+    final allTypes = [
+      'normal',
+      'fire',
+      'water',
+      'electric',
+      'grass',
+      'ice',
+      'fighting',
+      'poison',
+      'ground',
+      'flying',
+      'psychic',
+      'bug',
+      'rock',
+      'ghost',
+      'dragon',
+      'dark',
+      'steel',
+      'fairy'
+    ];
+
+    for (var type in allTypes) {
+      combinedMultipliers[type] = 1.0;
+    }
+
+    for (var pokemonType in types) {
+      final efficacies =
+          pokemonType['pokemon_v2_type']['pokemon_v2_typeefficacies'] as List;
+
+      for (var efficacy in efficacies) {
+        final attackingType =
+            efficacy['pokemon_v2_type']['name'].toString().toLowerCase();
+        final multiplier = efficacy['damage_factor'] / 100;
+
+        combinedMultipliers[attackingType] =
+            (combinedMultipliers[attackingType] ?? 1.0) * multiplier;
+      }
+    }
+
+    return combinedMultipliers.entries
+        .map((e) => {
+              'type': e.key,
+              'multiplier': e.value,
             })
         .toList();
   }

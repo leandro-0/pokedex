@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/evolution_chain.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/moves_tab.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_about.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_forms.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_stats.dart';
@@ -68,7 +69,7 @@ class _DetailsTabViewState extends State<DetailsTabView>
                   PokemonAbout(id: widget.id),
                   PokemonStats(id: widget.id),
                   EvolutionChain(id: widget.id),
-                  const Center(child: Text('Moves')),
+                  MovesTab(id: widget.id), // Add moves tab here
                   PokemonForms(id: widget.id),
                 ],
               ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/stat_item.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/weakness_item.dart';
 
-// pokemon_stats.dart
 class PokemonStats extends StatefulWidget {
   final int id;
 
@@ -54,48 +54,89 @@ class _PokemonStatsState extends State<PokemonStats>
   Widget build(BuildContext context) {
     final client = GraphQLProvider.of(context).value;
 
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: DetailsRepository.getPokemonStats(client, widget.id),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-
-        final stats = snapshot.data!;
-        final total =
-            stats.fold<int>(0, (sum, stat) => sum + (stat['base_stat'] as int));
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Base Stats',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              ...List.generate(stats.length, (index) => 
-                  StatItem(
-                  animation: _animation,
-                  label: orderedStatLabels[index],
-                  value: stats[index]['base_stat'] as int,
-                  color: _getStatColor(stats[index]['base_stat'] as int),
-                ),
-              ),
-              StatItem(
-                animation: _animation,
-                label: 'Total',
-                value: total,
-                color: _getStatColor(total ~/ stats.length),
-              ),
-            ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Base Stats',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-        );
-      },
+          const SizedBox(height: 16),
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: DetailsRepository.getPokemonStats(client, widget.id),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final stats = snapshot.data ?? [];
+              final total = stats.fold<int>(
+                  0, (sum, stat) => sum + (stat['base_stat'] as int));
+
+              return Column(
+                children: [
+                  ...List.generate(
+                    stats.length,
+                    (index) => StatItem(
+                      animation: _animation,
+                      label: orderedStatLabels[index],
+                      value: stats[index]['base_stat'] as int,
+                      color: _getStatColor(stats[index]['base_stat'] as int),
+                    ),
+                  ),
+                  StatItem(
+                    animation: _animation,
+                    label: 'Total',
+                    value: total,
+                    color: _getStatColor(total ~/ stats.length),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 32),
+          const Text(
+            'Type Defenses',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'The effectiveness of each type on this Pokémon.',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 16),
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: DetailsRepository.getPokemonWeaknesses(client, widget.id),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+
+              final weaknesses = snapshot.data ?? [];
+
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: weaknesses.map((weakness) {
+                  return WeaknessItem(
+                    type: weakness['type'] as String,
+                    multiplier: weakness['multiplier'] as double,
+                  );
+                }).toList(),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -104,5 +145,4 @@ class _PokemonStatsState extends State<PokemonStats>
     if (value < 70) return Colors.orange;
     return Colors.teal;
   }
-
 }

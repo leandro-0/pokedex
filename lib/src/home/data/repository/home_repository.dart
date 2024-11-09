@@ -1,4 +1,5 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 
 class HomeRepository {
@@ -6,10 +7,16 @@ class HomeRepository {
     GraphQLClient client,
     int page, {
     int pageSize = 20,
+    PokemonFilter? filter,
   }) async {
     final query = gql(r'''
-      query pokemonsList($limit: Int, $offset: Int) {
-        pokemon_v2_pokemon(limit: $limit, offset: $offset, where: {id: {_lte: 1025}}) {
+      query pokemonsList($limit: Int, $offset: Int, $where: pokemon_v2_pokemon_bool_exp) {
+        pokemon_v2_pokemon(
+          limit: $limit, 
+          offset: $offset, 
+          where: $where,
+          order_by: {id: asc}
+        ) {
           id
           name
           pokemon_v2_pokemonsprites {
@@ -29,9 +36,18 @@ class HomeRepository {
       }
     ''');
 
+    final whereCondition = filter?.toQueryVariables() ??
+        {
+          'id': {'_lte': 1025}
+        };
+
     final response = await client.query(QueryOptions(
       document: query,
-      variables: {'limit': pageSize, 'offset': page * pageSize},
+      variables: {
+        'limit': pageSize,
+        'offset': page * pageSize,
+        'where': whereCondition,
+      },
     ));
 
     if (response.data?['pokemon_v2_pokemon'] == null) {

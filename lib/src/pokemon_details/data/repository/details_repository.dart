@@ -4,7 +4,7 @@ import 'package:pokedex/src/home/data/models/pokemon_node.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
 import 'package:pokedex/src/pokemon_details/data/models/pokemon_form.dart';
-
+import '../calculators/type_effectiveness_calculator.dart';
 class DetailsRepository {
   static String get pokemonCompleteQuery => '''
   query getPokemonAboutInfo(\$id: Int!) {
@@ -298,86 +298,33 @@ class DetailsRepository {
         .toList();
   }
 
-  static Future<List<Map<String, dynamic>>> getPokemonWeaknesses(
-    GraphQLClient client,
-    int id,
-  ) async {
-    const query = '''
-    query GetPokemonWeaknesses(\$id: Int!) {
+static Future<List<Map<String, dynamic>>> getPokemonWeaknesses(
+  GraphQLClient client,
+  int id,
+) async {
+  const query = '''
+    query GetPokemonTypes(\$id: Int!) {
       pokemon_v2_pokemontype(where: {pokemon_id: {_eq: \$id}}) {
         pokemon_v2_type {
           name
-          pokemon_v2_typeefficacies {
-            damage_factor
-            target_type_id
-            pokemon_v2_type {
-              name
-            }
-          }
         }
       }
     }
   ''';
 
-    final result = await client.query(QueryOptions(
-      document: gql(query),
-      variables: {'id': id},
-    ));
+  final result = await client.query(QueryOptions(
+    document: gql(query),
+    variables: {'id': id},
+  ));
 
-    if (result.hasException) {
-      throw result.exception!;
-    }
-
-    final Map<String, double> combinedMultipliers = {};
-    final types = result.data!['pokemon_v2_pokemontype'] as List;
-    types
-        .map((t) => t['pokemon_v2_type']['name'].toString().toLowerCase())
-        .toList();
-
-    final allTypes = [
-      'normal',
-      'fire',
-      'water',
-      'electric',
-      'grass',
-      'ice',
-      'fighting',
-      'poison',
-      'ground',
-      'flying',
-      'psychic',
-      'bug',
-      'rock',
-      'ghost',
-      'dragon',
-      'dark',
-      'steel',
-      'fairy'
-    ];
-
-    for (var type in allTypes) {
-      combinedMultipliers[type] = 1.0;
-    }
-
-    for (var pokemonType in types) {
-      final efficacies =
-          pokemonType['pokemon_v2_type']['pokemon_v2_typeefficacies'] as List;
-
-      for (var efficacy in efficacies) {
-        final attackingType =
-            efficacy['pokemon_v2_type']['name'].toString().toLowerCase();
-        final multiplier = efficacy['damage_factor'] / 100;
-
-        combinedMultipliers[attackingType] =
-            (combinedMultipliers[attackingType] ?? 1.0) * multiplier;
-      }
-    }
-
-    return combinedMultipliers.entries
-        .map((e) => {
-              'type': e.key,
-              'multiplier': e.value,
-            })
-        .toList();
+  if (result.hasException) {
+    throw result.exception!;
   }
+
+  final types = (result.data!['pokemon_v2_pokemontype'] as List)
+      .map((t) => t['pokemon_v2_type']['name'].toString())
+      .toList();
+
+  return TypeEffectivenessCalculator.calculateWeaknesses(types);
+}
 }

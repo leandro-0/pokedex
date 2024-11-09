@@ -265,4 +265,36 @@ class DetailsRepository {
 
     return edges;
   }
+
+    static Future<List<Map<String, dynamic>>> getPokemonStats(
+    GraphQLClient client, 
+    int id,
+  ) async {
+    const query = '''
+      query GetPokemonStats(\$id: Int!) {
+        pokemon_v2_pokemonstat(where: {pokemon_id: {_eq: \$id}}) {
+          base_stat
+          pokemon_v2_stat {
+            name
+          }
+        }
+      }
+    ''';
+
+    final result = await client.query(QueryOptions(
+      document: gql(query),
+      variables: {'id': id},
+    ));
+
+    if (result.hasException) {
+      throw result.exception!;
+    }
+
+    return (result.data!['pokemon_v2_pokemonstat'] as List)
+        .map((stat) => {
+              'name': stat['pokemon_v2_stat']['name'],
+              'base_stat': stat['base_stat'],
+            })
+        .toList();
+  }
 }

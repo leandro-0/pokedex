@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/evolution_chain.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_about.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_forms.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_stats.dart';
 
 class DetailsTabView extends StatefulWidget {
   const DetailsTabView({
@@ -65,7 +66,7 @@ class _DetailsTabViewState extends State<DetailsTabView>
                 controller: _tabController,
                 children: [
                   PokemonAbout(id: widget.id),
-                  const Center(child: Text('Stats')),
+                  PokemonStats(id: widget.id),
                   EvolutionChain(id: widget.id),
                   const Center(child: Text('Moves')),
                   PokemonForms(id: widget.id),

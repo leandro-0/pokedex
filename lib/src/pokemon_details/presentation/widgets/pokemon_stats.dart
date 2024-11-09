@@ -99,7 +99,7 @@ class _PokemonStatsState extends State<PokemonStats>
           ),
           const SizedBox(height: 32),
           const Text(
-            'Type Defenses',
+            'Type Effectiveness',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),

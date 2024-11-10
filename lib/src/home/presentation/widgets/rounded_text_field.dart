@@ -5,6 +5,7 @@ class RoundedTextField extends StatelessWidget {
   final double borderRadius;
   final String? hintText;
   final Widget? prefixIcon;
+  final void Function(String)? onChanged;
 
   const RoundedTextField({
     super.key,
@@ -12,12 +13,14 @@ class RoundedTextField extends StatelessWidget {
     this.hintText,
     this.prefixIcon,
     this.controller,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: prefixIcon,

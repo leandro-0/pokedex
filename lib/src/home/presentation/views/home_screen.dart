@@ -4,6 +4,7 @@ import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/data/repository/home_repository.dart';
 import 'package:pokedex/src/home/presentation/widgets/filter_bottom_sheet.dart';
+import 'package:pokedex/src/guess_pokemon/presentation/views/guess_pokemon_screen.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex/src/home/presentation/widgets/rounded_text_field.dart';
 
@@ -107,7 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.question_mark_rounded,
               color: Colors.redAccent,
             ),
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(
+              context,
+              GuessPokemonScreen.routeName,
+            ),
           ),
         ],
       ),

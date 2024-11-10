@@ -128,8 +128,10 @@ class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
                   child: IconButton(
                     tooltip: 'Play cry',
                     onPressed: () async {
+                      if (snapshot.data == null || player.playing) return;
                       await player.setUrl(snapshot.data as String);
                       await player.play();
+                      await player.stop();
                     },
                     icon: Icon(
                       Icons.graphic_eq_rounded,

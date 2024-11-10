@@ -4,7 +4,9 @@ import 'package:pokedex/src/home/data/models/pokemon_node.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
 import 'package:pokedex/src/pokemon_details/data/models/pokemon_form.dart';
+import 'package:pokedex/src/pokemon_details/data/models/pokemon_move';
 import '../calculators/type_effectiveness_calculator.dart';
+
 class DetailsRepository {
   static String get pokemonCompleteQuery => '''
   query getPokemonAboutInfo(\$id: Int!) {
@@ -15,6 +17,16 @@ class DetailsRepository {
       hatch_counter
       pokemon_v2_pokemonhabitat {
         name
+      }
+      pokemon_v2_pokemons {
+        height
+        weight
+        pokemon_v2_pokemonabilities {
+          is_hidden
+          pokemon_v2_ability {
+            name
+          }
+        }
       }
       pokemon_v2_pokemons {
         height
@@ -298,11 +310,11 @@ class DetailsRepository {
         .toList();
   }
 
-static Future<List<Map<String, dynamic>>> getPokemonWeaknesses(
-  GraphQLClient client,
-  int id,
-) async {
-  const query = '''
+  static Future<List<Map<String, dynamic>>> getPokemonWeaknesses(
+    GraphQLClient client,
+    int id,
+  ) async {
+    const query = '''
     query GetPokemonTypes(\$id: Int!) {
       pokemon_v2_pokemontype(where: {pokemon_id: {_eq: \$id}}) {
         pokemon_v2_type {
@@ -312,19 +324,74 @@ static Future<List<Map<String, dynamic>>> getPokemonWeaknesses(
     }
   ''';
 
-  final result = await client.query(QueryOptions(
-    document: gql(query),
-    variables: {'id': id},
-  ));
+    final result = await client.query(QueryOptions(
+      document: gql(query),
+      variables: {'id': id},
+    ));
 
-  if (result.hasException) {
-    throw result.exception!;
+    if (result.hasException) {
+      throw result.exception!;
+    }
+
+    final types = (result.data!['pokemon_v2_pokemontype'] as List)
+        .map((t) => t['pokemon_v2_type']['name'].toString())
+        .toList();
+
+    return TypeEffectivenessCalculator.calculateWeaknesses(types);
   }
 
-  final types = (result.data!['pokemon_v2_pokemontype'] as List)
-      .map((t) => t['pokemon_v2_type']['name'].toString())
-      .toList();
+  static Future<List<PokemonMove>> getPokemonMoves(
+    GraphQLClient client,
+    int id,
+  ) async {
+    final query = gql(r'''
+    query GetPokemonMoves($id: Int!) {
+      pokemon_v2_pokemonmove(
+        where: {pokemon_id: {_eq: $id}}
+        order_by: {level: asc}
+      ) {
+        level
+        pokemon_v2_move {
+          name
+          power
+          accuracy
+          pokemon_v2_type {
+            name
+          }
+          pokemon_v2_movedamageclass {
+            name
+          }
+        }
+        pokemon_v2_movelearnmethod {
+          name
+        }
+      }
+    }
+  ''');
 
-  return TypeEffectivenessCalculator.calculateWeaknesses(types);
-}
+    final result = await client.query(QueryOptions(
+      document: query,
+      variables: {'id': id},
+    ));
+
+    if (result.hasException) {
+      throw result.exception!;
+    }
+
+    final moves = (result.data!['pokemon_v2_pokemonmove'] as List)
+        .map((move) => PokemonMove.fromJson(move))
+        .toList();
+
+    final uniqueMoves = <PokemonMove>[];
+    final seenMoves = <String>{};
+
+    for (var move in moves) {
+      if (!seenMoves.contains(move.name)) {
+        uniqueMoves.add(move);
+        seenMoves.add(move.name);
+      }
+    }
+
+    return uniqueMoves;
+  }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/data/repository/home_repository.dart';
+import 'package:pokedex/src/home/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:pokedex/src/guess_pokemon/presentation/views/guess_pokemon_screen.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex/src/home/presentation/widgets/rounded_text_field.dart';
@@ -21,6 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<PokemonTile> _pokemons = [];
   late final GraphQLClient _client;
   final ScrollController _controller = ScrollController();
+  PokemonFilter? _filter;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -33,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  /// Listener to load more pokemons when the user reaches the end of the list
   void _scrollListener() {
     if (_isLoading ||
         _controller.position.pixels != _controller.position.maxScrollExtent) {
@@ -45,11 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _searchController.dispose();
     _controller.dispose();
     super.dispose();
   }
 
-  /// Load the first page of pokemons
   Future<void> _initialLoad() async {
     _page = 0;
     _thereIsMoreData = true;
@@ -57,13 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
     await _loadPokemonList();
   }
 
-  /// Load the next page of pokemons
   Future<void> _loadPokemonList() async {
     if (!_thereIsMoreData || _isLoading) return;
 
     setState(() => _isLoading = true);
 
-    final data = await HomeRepository.getPokemons(_client, _page);
+    final data =
+        await HomeRepository.getPokemons(_client, _page, filter: _filter);
     if (data.isEmpty) {
       _thereIsMoreData = false;
     } else {
@@ -74,6 +77,21 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     setState(() => _isLoading = false);
+  }
+
+  void _updateFilter({
+    String? name,
+    List<String>? types,
+    int? generation,
+  }) {
+    setState(() {
+      _filter = PokemonFilter(
+        name: name ?? _filter?.name,
+        types: types ?? _filter?.types,
+        generation: generation ?? _filter?.generation,
+      );
+      _initialLoad();
+    });
   }
 
   @override
@@ -107,18 +125,42 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: RoundedTextField(
+                    controller: _searchController,
                     hintText: 'Search by name',
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
+                    onChanged: (value) => _updateFilter(name: value),
                   ),
                 ),
-                // filter button
                 IconButton(
                   tooltip: 'Filters',
                   icon: const Icon(Icons.filter_alt_rounded),
-                  onPressed: () {},
-                )
+                  onPressed: () async {
+                    final result =
+                        await showModalBottomSheet<(List<String>, int?)>(
+                      context: context,
+                      builder: (_) => FilterBottomSheet(
+                        selectedTypes: _filter?.types,
+                        selectedGeneration: _filter?.generation,
+                      ),
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                    );
+
+                    if (result != null) {
+                      final (types, generation) = result;
+                      _updateFilter(
+                        name: _searchController.text,
+                        types: types.isEmpty ? null : types,
+                        generation: generation,
+                      );
+                    }
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 15.0),

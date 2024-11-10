@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
 class RoundedTextField extends StatelessWidget {
-  final TextEditingController? controller;
-  final double borderRadius;
-  final String? hintText;
+  final TextEditingController controller;
+  final String hintText;
   final Widget? prefixIcon;
   final void Function(String)? onChanged;
 
   const RoundedTextField({
     super.key,
-    this.borderRadius = 10.0,
-    this.hintText,
+    required this.controller,
+    required this.hintText,
     this.prefixIcon,
     this.controller,
     this.onChanged,
@@ -25,7 +24,11 @@ class RoundedTextField extends StatelessWidget {
         hintText: hintText,
         prefixIcon: prefixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 15,
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/pokemon_details/data/models/egg_groups.dart';
+import 'package:pokedex/src/pokemon_details/data/models/pokemon_ability.dart';
 
 class AboutInfo {
   final String description;
@@ -13,6 +14,7 @@ class AboutInfo {
   final double femalePercentage;
   final EggGroups eggGroups;
   final int eggCycle;
+  final List<PokemonAbility> abilities;
 
   AboutInfo({
     required this.description,
@@ -26,6 +28,7 @@ class AboutInfo {
     required this.eggGroups,
     required this.eggCycle,
     required this.habitat,
+    required this.abilities,
   });
 
   factory AboutInfo.fromJson(Map<String, dynamic> json) {
@@ -52,6 +55,10 @@ class AboutInfo {
       habitat: Utils.capitalize(
         json['pokemon_v2_pokemonhabitat']?['name'] ?? 'Unknown',
       ),
+      abilities: (json['pokemon_v2_pokemons'][0]['pokemon_v2_pokemonabilities']
+              as List)
+          .map((ability) => PokemonAbility.fromJson(ability))
+          .toList(),
     );
   }
 }

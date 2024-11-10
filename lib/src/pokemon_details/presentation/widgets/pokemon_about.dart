@@ -79,6 +79,11 @@ class _PokemonAboutState extends State<PokemonAbout> {
                   title: 'Generation',
                   value: about.generation,
                 ),
+                const AboutHeading(text: 'Abilities'),
+                ...about.abilities.map((ability) => InfoItem(
+                      title: ability.isHidden ? 'Hidden Ability' : 'Ability',
+                      value: ability.name,
+                    )),
                 const AboutHeading(text: 'Breeding'),
                 PokemonGender(
                   malePercentage: about.malePercentage,

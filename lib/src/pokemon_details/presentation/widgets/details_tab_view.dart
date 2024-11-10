@@ -69,7 +69,7 @@ class _DetailsTabViewState extends State<DetailsTabView>
                   PokemonAbout(id: widget.id),
                   PokemonStats(id: widget.id),
                   EvolutionChain(id: widget.id),
-                  MovesTab(id: widget.id), // Add moves tab here
+                  MovesTab(id: widget.id),
                   PokemonForms(id: widget.id),
                 ],
               ),

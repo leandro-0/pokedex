@@ -21,6 +21,16 @@ class DetailsRepository {
       pokemon_v2_pokemons {
         height
         weight
+        pokemon_v2_pokemonabilities {
+          is_hidden
+          pokemon_v2_ability {
+            name
+          }
+        }
+      }
+      pokemon_v2_pokemons {
+        height
+        weight
       }
       pokemon_v2_pokemonegggroups {
         pokemon_v2_egggroup {

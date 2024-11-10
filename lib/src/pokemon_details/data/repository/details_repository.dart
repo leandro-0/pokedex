@@ -64,37 +64,6 @@ class DetailsRepository {
     return AboutInfo.fromJson(data);
   }
 
-  static List<String> _calculateWeaknesses(List<String> types) {
-    final typeWeaknesses = {
-      'normal': ['fighting'],
-      'fire': ['water', 'rock', 'ground'],
-      'water': ['electric', 'grass'],
-      'electric': ['ground'],
-      'grass': ['fire', 'ice', 'poison', 'flying', 'bug'],
-      'ice': ['fire', 'fighting', 'rock', 'steel'],
-      'fighting': ['flying', 'psychic', 'fairy'],
-      'poison': ['ground', 'psychic'],
-      'ground': ['water', 'ice', 'grass'],
-      'flying': ['electric', 'ice', 'rock'],
-      'psychic': ['bug', 'ghost', 'dark'],
-      'bug': ['fire', 'flying', 'rock'],
-      'rock': ['water', 'grass', 'fighting', 'ground', 'steel'],
-      'ghost': ['ghost', 'dark'],
-      'dragon': ['ice', 'dragon', 'fairy'],
-      'dark': ['fighting', 'bug', 'fairy'],
-      'steel': ['fire', 'fighting', 'ground'],
-      'fairy': ['poison', 'steel'],
-    };
-
-    final weaknesses = <String>{};
-
-    for (final type in types) {
-      weaknesses.addAll(typeWeaknesses[type] ?? []);
-    }
-
-    return weaknesses.toList();
-  }
-
   static Future<PokemonTile> getPokemonInfo(
     GraphQLClient client,
     int id,

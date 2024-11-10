@@ -11,7 +11,6 @@ class RoundedTextField extends StatelessWidget {
     required this.controller,
     required this.hintText,
     this.prefixIcon,
-    this.controller,
     this.onChanged,
   });
 

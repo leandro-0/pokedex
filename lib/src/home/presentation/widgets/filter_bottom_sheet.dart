@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/about_heading.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   final List<String>? selectedTypes;
@@ -137,10 +138,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             const SizedBox(height: 16),
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Types:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              child: AboutHeading(text: 'Types'),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -196,10 +194,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             const SizedBox(height: 16),
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Generation:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              child: AboutHeading(text: 'Generation'),
             ),
             const SizedBox(height: 8),
             DropdownButton<int>(

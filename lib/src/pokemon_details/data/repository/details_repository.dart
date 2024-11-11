@@ -110,11 +110,15 @@ class DetailsRepository {
           pokemon_v2_pokemonspecy {
             pokemon_v2_pokemons {
               pokemon_v2_pokemonforms(order_by: {form_order: asc}) {
-                name
                 pokemon_v2_pokemonformsprites {
                   sprites(path: "front_default")
                 }
+                name
                 form_order
+                is_mega
+                pokemon_v2_pokemonformnames(where: {language_id: {_eq: 9}}) {
+                  name
+                }
               }
             }
           }

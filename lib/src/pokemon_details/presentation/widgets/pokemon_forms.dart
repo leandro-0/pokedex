@@ -41,13 +41,24 @@ class PokemonForms extends StatelessWidget {
                       width: 60.0,
                     ),
               title: Text(
-                Utils.capitalize(form.name),
+                Utils.capitalize(form.alternativeName ?? form.name),
                 style: const TextStyle(fontSize: 16.0),
               ),
+              trailing: _formIcon(form),
             );
           },
         );
       },
+    );
+  }
+
+  Widget? _formIcon(PokemonForm form) {
+    if (!form.isGmax && !form.isMega) return null;
+
+    return Image.asset(
+      'assets/icons/${form.isMega ? 'mega' : 'gigantamax'}.png',
+      height: 24.0,
+      width: 24.0,
     );
   }
 }

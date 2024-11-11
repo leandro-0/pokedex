@@ -26,7 +26,7 @@ class PokemonFilter {
       };
     }
 
-    if (generation != null) {
+    if (generation != null && generation != -1) {
       final ranges = {
         1: {'_gte': 1, '_lte': 151},
         2: {'_gte': 152, '_lte': 251},

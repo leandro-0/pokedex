@@ -69,10 +69,9 @@ class DetailsRepository {
     int id,
   ) async {
     final query = gql(r'''
-      query pokemonsList($id: Int) {
+      query getPokemonInfo($id: Int) {
         pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
           id
-          name
           pokemon_v2_pokemonsprites {
             sprites(path: "other.official-artwork.front_default")
             pokemon_v2_pokemon {
@@ -85,6 +84,9 @@ class DetailsRepository {
             pokemon_v2_type {
               name
             }
+          }
+          pokemon_v2_pokemonspecy {
+            name
           }
         }
       }
@@ -110,11 +112,15 @@ class DetailsRepository {
           pokemon_v2_pokemonspecy {
             pokemon_v2_pokemons {
               pokemon_v2_pokemonforms(order_by: {form_order: asc}) {
-                name
                 pokemon_v2_pokemonformsprites {
                   sprites(path: "front_default")
                 }
+                name
                 form_order
+                is_mega
+                pokemon_v2_pokemonformnames(where: {language_id: {_eq: 9}}) {
+                  name
+                }
               }
             }
           }
@@ -315,19 +321,18 @@ class DetailsRepository {
   ) async {
     final query = gql(r'''
     query GetPokemonMoves($id: Int!) {
-      pokemon_v2_pokemonmove(
-        where: {pokemon_id: {_eq: $id}}
-        order_by: {level: asc}
-      ) {
+      pokemon_v2_pokemonmove(where: {pokemon_id: {_eq: $id}}, order_by: {level: asc}) {
         level
         pokemon_v2_move {
-          name
           power
           accuracy
           pokemon_v2_type {
             name
           }
           pokemon_v2_movedamageclass {
+            name
+          }
+          pokemon_v2_movenames(where: {language_id: {_eq: 9}}) {
             name
           }
         }

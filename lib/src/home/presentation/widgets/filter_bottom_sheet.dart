@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/about_heading.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   final List<String>? selectedTypes;
@@ -95,14 +96,29 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       ),
       child: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Visibility(
+                  visible: selectedTypes.isNotEmpty ||
+                      (selectedGeneration ?? -1) > 0,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: IconButton(
+                    tooltip: 'Reset filters',
+                    onPressed: () {
+                      setState(() {
+                        selectedTypes.clear();
+                        selectedGeneration = -1;
+                      });
+                    },
+                    icon: const Icon(Icons.restart_alt_rounded),
+                  ),
+                ),
                 const Spacer(),
-                const Expanded(
-                  flex: 2,
+                const Center(
                   child: Text(
                     'Filter Pokémon',
                     textAlign: TextAlign.center,
@@ -112,35 +128,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
-            if (selectedTypes.isNotEmpty || selectedGeneration != null)
-              TextButton.icon(
-                icon: const Icon(Icons.restart_alt),
-                label: const Text('Reset filters'),
-                onPressed: () {
-                  setState(() {
-                    selectedTypes.clear();
-                    selectedGeneration = null;
-                  });
-                },
-              ),
-            const SizedBox(height: 16),
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Types:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              child: AboutHeading(text: 'Types'),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -196,10 +193,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             const SizedBox(height: 16),
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Generation:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              child: AboutHeading(text: 'Generation'),
             ),
             const SizedBox(height: 8),
             DropdownButton<int>(
@@ -208,7 +202,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               isExpanded: true,
               items: [
                 const DropdownMenuItem(
-                  value: null,
+                  value: -1,
                   child: Text('All generations'),
                 ),
                 ...generations.entries.map(
@@ -224,6 +218,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             SizedBox(
               width: double.infinity,
               child: FilledButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.redAccent),
+                ),
                 onPressed: () => Navigator.pop(
                   context,
                   (selectedTypes, selectedGeneration),

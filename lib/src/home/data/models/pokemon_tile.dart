@@ -17,7 +17,7 @@ class PokemonTile {
     final sprites = json['pokemon_v2_pokemonsprites']?[0];
     return PokemonTile(
       id: json['id'],
-      name: json['name'],
+      name: json['pokemon_v2_pokemonspecy']['name'],
       spriteUrl: sprites['sprites'],
       shinySpriteUrl: sprites['pokemon_v2_pokemon']
           ?['pokemon_v2_pokemonsprites']?[0]['sprites'],

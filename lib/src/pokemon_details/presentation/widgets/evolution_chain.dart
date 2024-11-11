@@ -6,6 +6,7 @@ import 'package:pokedex/src/home/data/models/evolution_edge.dart';
 import 'package:pokedex/src/home/data/models/pokemon_node.dart';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
 import 'package:pokedex/src/pokemon_details/presentation/views/details_screen.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/empty_indicator.dart';
 
 class EvolutionChain extends StatelessWidget {
   final int id;
@@ -28,19 +29,8 @@ class EvolutionChain extends StatelessWidget {
 
         final chain = snapshot.data as List<EvolutionEdge>;
         if (chain.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'This Pokémon is so special that it has no evolution chain!',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
+          return const EmptyIndicator(
+            text: 'This Pokémon is so special that it has no evolution chain!',
           );
         }
 

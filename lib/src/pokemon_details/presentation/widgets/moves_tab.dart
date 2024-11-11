@@ -4,6 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/pokemon_details/data/models/pokemon_move';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/empty_indicator.dart';
 
 class MovesTab extends StatefulWidget {
   final int id;
@@ -108,6 +109,10 @@ class _MovesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (moves.isEmpty) {
+      return const EmptyIndicator(text: 'No moves available');
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: moves.length,

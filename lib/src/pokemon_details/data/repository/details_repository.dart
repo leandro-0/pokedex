@@ -69,10 +69,9 @@ class DetailsRepository {
     int id,
   ) async {
     final query = gql(r'''
-      query pokemonsList($id: Int) {
+      query getPokemonInfo($id: Int) {
         pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
           id
-          name
           pokemon_v2_pokemonsprites {
             sprites(path: "other.official-artwork.front_default")
             pokemon_v2_pokemon {
@@ -85,6 +84,9 @@ class DetailsRepository {
             pokemon_v2_type {
               name
             }
+          }
+          pokemon_v2_pokemonspecy {
+            name
           }
         }
       }

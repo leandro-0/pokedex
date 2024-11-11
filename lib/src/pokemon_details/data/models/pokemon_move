@@ -35,7 +35,7 @@ class PokemonMove {
     }
 
     return PokemonMove(
-      name: move['name'],
+      name: move['pokemon_v2_movenames'][0]['name'],
       power: move['power'],
       accuracy: move['accuracy'],
       type: move['pokemon_v2_type']['name'],

@@ -321,19 +321,18 @@ class DetailsRepository {
   ) async {
     final query = gql(r'''
     query GetPokemonMoves($id: Int!) {
-      pokemon_v2_pokemonmove(
-        where: {pokemon_id: {_eq: $id}}
-        order_by: {level: asc}
-      ) {
+      pokemon_v2_pokemonmove(where: {pokemon_id: {_eq: $id}}, order_by: {level: asc}) {
         level
         pokemon_v2_move {
-          name
           power
           accuracy
           pokemon_v2_type {
             name
           }
           pokemon_v2_movedamageclass {
+            name
+          }
+          pokemon_v2_movenames(where: {language_id: {_eq: 9}}) {
             name
           }
         }

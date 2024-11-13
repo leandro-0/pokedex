@@ -48,18 +48,7 @@ class EvolutionChain extends StatelessWidget {
                   node: edge.from,
                   isOriginalPk: id == edge.from.pokemonTile.id,
                 ),
-                Column(
-                  children: [
-                    if (edge.from.evolutionTrigger != null) ...[
-                      Text(
-                        edge.from.evolutionTrigger!,
-                        style: const TextStyle(fontSize: 16.0),
-                      ),
-                      const SizedBox(height: 5.0),
-                    ],
-                    const Icon(Icons.arrow_forward_ios_rounded),
-                  ],
-                ),
+                const Icon(Icons.arrow_forward_ios_rounded),
                 _Chain(
                   node: edge.to,
                   isOriginalPk: id == edge.to.pokemonTile.id,

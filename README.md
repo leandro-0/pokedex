@@ -37,133 +37,29 @@ Esta aplicación de Pokédex ofrece una experiencia interactiva y detallada para
 
 La aplicación utiliza diversas consultas GraphQL para interactuar de manera eficiente con la PokéAPI y obtener información detallada sobre los Pokémon. A continuación se presentan todas las consultas utilizadas con su respectiva explicación:
 
-### Obtener detalles de un Pokémon
-Esta consulta obtiene información detallada de un Pokémon específico, incluyendo su ID, nombre, tipos, altura, peso y estadísticas.
+### Obtener formas de un pokemon
+Esta consulta obtiene la forma de un pokemon dado su ID
 
-    ```sql
-   
-      query GetPokemonDetails($name: String!) {
-        pokemon(name: $name) {
-          id
-          name
-          types {
-            type {
-              name
-            }
-          }
-          height
-          weight
-          stats {
-            base_stat
-            stat {
-              name
-            }
-          }
-        }
-      }
-
-### Obtener lista de Pokémon
-Esta consulta obtiene una lista de Pokémon con sus nombres e imágenes, permitiendo la paginación mediante los parámetros limit y offset.
-
-    ```sql
-   
-      query GetPokemonList($limit: Int!, $offset: Int!) {
-        pokemons(limit: $limit, offset: $offset) {
-          results {
-            name
-            image
-          }
-        }
-      }
-
-### Obtener habilidades de un Pokémon
-Esta consulta obtiene las habilidades que posee un Pokémon específico.
-
-    ```sql
-    
-    query GetPokemonAbilities($name: String!) {
-     pokemon(name: $name) {
-       abilities {
-         ability {
-           name
-         }
-       }
-     }
-    }
-
-
-### Obtener movimientos de un Pokémon
-
-    ```sql
-    
-    query GetPokemonMoves($name: String!) {
-        pokemon(name: $name) {
-          moves {
-            move {
-              name
+      query GetPokemonForms($id: Int) {
+        pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
+          pokemon_v2_pokemonspecy {
+            pokemon_v2_pokemons {
+              pokemon_v2_pokemonforms(order_by: {form_order: asc}) {
+                pokemon_v2_pokemonformsprites {
+                  sprites(path: "front_default")
+                }
+                name
+                form_order
+                is_mega
+                pokemon_v2_pokemonformnames(where: {language_id: {_eq: 9}}) {
+                  name
+                }
+              }
             }
           }
         }
-     }
-
-### Obtener cadena evolutiva de un Pokémon
-
-    ```sql
-    
-    query GetPokemonEvolution($id: Int!) {
-      species: pokemon_v2_pokemonspecies_by_pk(id: $id) {
-        evolutionChain: pokemon_v2_evolutionchain {
-          species: pokemon_v2_pokemonspecies {
-            id
-            name
-          }
-        }
       }
-    }
-    
-### Obtener estadísticas de un Pokémon
-
-    ```sql
-    
-    query GetPokemonStats($name: String!) {
-      pokemon(name: $name) {
-        stats {
-          base_stat
-          effort
-          stat {
-            name
-          }
-        }
-      }
-    }
-
-### Obtener tipo(s) de un Pokémon
-
-    ```sql
-    
-    query GetPokemonTypes($name: String!) {
-     pokemon(name: $name) {
-       types {
-         type {
-           name
-         }
-       }
-     }
-    } 
-### Obtener descripciones de una especie de Pokémon
-
-    ```sql
-
-    query GetPokemonSpecies($name: String!) {
-     species(name: $name) {
-       flavor_text_entries {
-         flavor_text
-         language {
-           name
-         }
-       }
-     }
-    }
+    '''
 
 ## Decisiones de Diseño
 ## Componentes de Flutter:
@@ -180,8 +76,6 @@ La aplicación Pokédex está compuesta por varias pantallas clave, cada una dis
 - `AppBar`: Barra superior con el título y opciones de navegación.
 - `GridView.builder`: Crea una cuadrícula desplazable que muestra los Pokémon en un formato de tarjetas.
 - `Card`: Envuelve cada elemento de la cuadrícula para darles un aspecto de tarjeta.
-- `CachedNetworkImage`: Carga y almacena en caché las imágenes de los Pokémon para mejorar el rendimiento.
-- `GestureDetector` o `InkWell`: Detecta toques en cada tarjeta para navegar a la pantalla de detalles.
 - `FutureBuilder`: Maneja y muestra datos asincrónicos obtenidos de la API.
 
 ## 2. Pantalla de Detalles del Pokémon

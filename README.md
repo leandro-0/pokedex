@@ -2,64 +2,82 @@
 
 ## Descripción del Proyecto
 
-Esta aplicación de Pokédex ofrece una experiencia interactiva y detallada para los entusiastas de Pokémon, proporcionando información exhaustiva sobre diferentes especies. Utiliza datos de la PokéAPI a través de consultas GraphQL para asegurar eficiencia y rapidez en la obtención de información. Los usuarios pueden explorar estadísticas, habilidades y detalles específicos de cada Pokémon, como tipos, peso, altura y evolución.
+Esta aplicación de Pokédex brinda a los entusiastas de Pokémon una experiencia interactiva y detallada, proporcionando información exhaustiva sobre diversas especies a través de consultas GraphQL a la PokéAPI, lo que garantiza eficiencia y rapidez en la obtención de datos. Los usuarios pueden explorar estadísticas, habilidades y particularidades específicas de cada Pokémon, como tipos, peso, altura y evolución, en una plataforma integral que facilita el acceso a información precisa y detallada sobre el universo Pokémon.
 
 ## Funcionalidades Principales
 
-- **Pantalla de lista de Pokémon**: Una vista de desplazamiento con imágenes y nombres de Pokémon.
-- **Pantalla de detalles del Pokémon**: Muestra información detallada, incluidas estadísticas, tipo, peso y altura.
-- **Estadísticas de combate**: Desglose de los valores de HP, ataque, defensa, velocidad, etc.
-- **Búsqueda Avanzada**: Encuentra rápidamente Pokémon específicos utilizando la función de búsqueda por nombre, facilitando el acceso directo a la información deseada.
+- **Pantalla de lista de Pokémon**: una vista de desplazamiento con imágenes y nombres de Pokémon.
+- **Pantalla de detalles del Pokémon**: muestra información detallada, incluidas estadísticas, tipo, peso y altura.
+- **Estadísticas de combate**: desglose de los valores de HP, ataque, defensa, velocidad, etc.
+- **Búsqueda Avanzada**: encuentra rápidamente Pokémon específicos utilizando la función de búsqueda por nombre, facilitando el acceso directo a la información deseada.
 
 ## Tecnologías Utilizadas
 
-- **Flutter**: Framework principal para desarrollar la aplicación.
-- **GraphQL**: Protocolo para interactuar eficientemente con la PokéAPI.
-- **PokéAPI**: Fuente de datos para obtener información sobre Pokémon.
+- **Flutter**
+- **GraphQL**
+- **PokéAPI**
 
 ## Configuración e Instalación
 
 1. Clonar el repositorio:
-
-   ```bash
-   git clone https://github.com/leandro-0/pokedex.git
-   cd pokedex
+```bash
+git clone https://github.com/leandro-0/pokedex.git
+cd pokedex
+```
    
 2. Instalar dependencias de Flutter:
-   
-   ```bash
-   flutter pub get
-3. Ejecutar la aplicación:
+```bash
+flutter pub get
+```
 
-   ```bash
-   flutter run
+3. Ejecutar la aplicación:
+```bash
+flutter run
+```
+
 ## Uso de la API GraphQL
 
-La aplicación utiliza diversas consultas GraphQL para interactuar de manera eficiente con la PokéAPI y obtener información detallada sobre los Pokémon. A continuación se presentan todas las consultas utilizadas con su respectiva explicación:
+La aplicación utiliza diversas consultas GraphQL para interactuar de manera eficiente con la PokéAPI y obtener información detallada sobre los Pokémon. De forma detallada, se realizan *queries* específicos para:
 
-### Obtener formas de un pokemon
-Esta consulta obtiene la forma de un pokemon dado su ID
+- **Lista de Pokémon**: se cargan datos esenciales para solo visualizarlos en la lista, como: nombre, tipos, ID y sprites. Asimismo, se incluyen los filtros en esa misma consulta.
 
-      query GetPokemonForms($id: Int) {
-        pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
-          pokemon_v2_pokemonspecy {
-            pokemon_v2_pokemons {
-              pokemon_v2_pokemonforms(order_by: {form_order: asc}) {
-                pokemon_v2_pokemonformsprites {
-                  sprites(path: "front_default")
-                }
-                name
-                form_order
-                is_mega
-                pokemon_v2_pokemonformnames(where: {language_id: {_eq: 9}}) {
-                  name
-                }
-              }
-            }
+- **Who is that Pokémon?**: se hace una consulta para solo obtener la información para mostrar una pista al usuario de cuál es ese Pokémon y la necesaria para pasar a la pantalla de detalles cuando lo adivine o se rinda.
+
+- **Grito del Pokémon**: se realiza una consulta específicamente para ese único audio.
+
+- **Detalles (about)**: se hace una consulta para obtener datos como: egg group, descripción, hábitat, peso, altura, porcentaje de género, habilidades, etc.
+
+- **Movimientos**: se hace un query que traiga todos los movimientos y luego estos se clasifican en diferentes categorías.
+
+- **Evoluciones**: se usa este query para obtener la cadena evolutiva de un Pokémon y los métodos de evolución que necesita.
+
+- **Base stats**: una consulta para traer las estadísticas bases de un Pokémon.
+
+- **Formas de un Pokémon**
+
+A continuación se presenta un ejemplo de una las utilizadas para obtener las formas posibles de un Pokémon en base a su ID en la Pokédex Nacional. En esta se incluye: nombre de la forma, sprites, si es una mega evolución, el orden de la forma y su nombre en inglés.
+
+```graphql
+query GetPokemonForms($id: Int) {
+  pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
+    pokemon_v2_pokemonspecy {
+      pokemon_v2_pokemons {
+        pokemon_v2_pokemonforms(order_by: {form_order: asc}) {
+          pokemon_v2_pokemonformsprites {
+            sprites(path: "front_default")
+          }
+          name
+          form_order
+          is_mega
+          pokemon_v2_pokemonformnames(where: {language_id: {_eq: 9}}) {
+            name
           }
         }
       }
-    '''
+    }
+  }
+}
+```
 
 ## Decisiones de Diseño
 ## Componentes de Flutter:
@@ -135,7 +153,7 @@ La aplicación Pokédex está compuesta por varias pantallas clave, cada una dis
 - `AppBar` con `TextField`: Campo de búsqueda integrado en la barra superior.
 - `IconButton`: Botón para iniciar la búsqueda o limpiar el campo.
 - `ListView`: Muestra los resultados de búsqueda en tiempo real.
-- `StreamBuilder` o `FutureBuilder`: Gestiona las entradas de búsqueda y actualiza los resultados dinámicamente.
+- `FutureBuilder`: Gestiona las entradas de búsqueda y actualiza los resultados dinámicamente.
 
 ## App flow
 
@@ -147,4 +165,6 @@ La aplicación Pokédex está compuesta por varias pantallas clave, cada una dis
 
 ## Créditos y Contribuciones
 
-Proyecto desarrollado por Leandro y Steven
+Proyecto desarrollado por **Leandro Jiménez** y **Steven Mateo**.
+
+Icono de Gigantamax: https://www.deviantart.com/jormxdos/art/Gigantamax-Icon-933638988

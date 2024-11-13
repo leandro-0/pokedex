@@ -7,6 +7,7 @@ import 'package:pokedex/src/home/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:pokedex/src/guess_pokemon/presentation/views/guess_pokemon_screen.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex/src/home/presentation/widgets/rounded_text_field.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/empty_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
@@ -164,14 +165,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 15.0),
-            Expanded(
-              child: ListView.separated(
-                controller: _controller,
-                itemCount: _pokemons.length + (_isLoading ? 1 : 0),
-                separatorBuilder: (_, __) => const SizedBox(height: 10.0),
-                itemBuilder: _buildPokemonCard,
+            if (_pokemons.isNotEmpty)
+              Expanded(
+                child: ListView.separated(
+                  controller: _controller,
+                  itemCount: _pokemons.length + (_isLoading ? 1 : 0),
+                  separatorBuilder: (_, __) => const SizedBox(height: 10.0),
+                  itemBuilder: _buildPokemonCard,
+                ),
               ),
-            ),
+            if (_pokemons.isEmpty && !_isLoading)
+              const Center(child: EmptyIndicator(text: 'No Pokémon found')),
           ],
         ),
       ),

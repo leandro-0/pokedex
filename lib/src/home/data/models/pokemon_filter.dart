@@ -15,7 +15,7 @@ class PokemonFilter {
     };
 
     if (name != null && name!.isNotEmpty) {
-      where['name'] = {'_ilike': '%$name%'};
+      where['name'] = {'_ilike': '$name%'};
     }
 
     if (types != null && types!.isNotEmpty) {

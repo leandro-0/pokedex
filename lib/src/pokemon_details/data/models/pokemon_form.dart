@@ -20,12 +20,18 @@ class PokemonForm {
       order: json['form_order'],
       name: json['name'],
       spriteUrl: json['pokemon_v2_pokemonformsprites']?[0]['sprites'],
-      alternativeName: json['pokemon_v2_pokemonformnames'] != null &&
-              (json['pokemon_v2_pokemonformnames'] as List).isNotEmpty
-          ? json['pokemon_v2_pokemonformnames'][0]['name']
-          : null,
+      alternativeName: _extractAlternativeName(json),
       isMega: json['is_mega'],
       isGmax: (json['name'] as String).contains('gmax'),
     );
+  }
+
+  static String? _extractAlternativeName(Map<String, dynamic> json) {
+    String? result = json['pokemon_v2_pokemonformnames'] != null &&
+            (json['pokemon_v2_pokemonformnames'] as List).isNotEmpty
+        ? json['pokemon_v2_pokemonformnames'][0]['name']
+        : null;
+    if (result != null && result.isEmpty) return null;
+    return result;
   }
 }

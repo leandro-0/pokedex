@@ -56,7 +56,7 @@ class StatItem extends StatelessWidget {
               animation: animation,
               builder: (context, _) {
                 return ProgressBar(
-                  progress: animation.value * (progress ?? value / 150),
+                  progress: animation.value * (progress ?? value / 255),
                   color: color,
                 );
               },

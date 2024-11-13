@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:pokedex/src/pokemon_details/data/models/pokemon_move';
+import 'package:pokedex/src/pokemon_details/data/models/pokemon_move.dart';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/empty_indicator.dart';

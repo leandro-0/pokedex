@@ -4,7 +4,7 @@ import 'package:pokedex/src/home/data/models/pokemon_node.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
 import 'package:pokedex/src/pokemon_details/data/models/pokemon_form.dart';
-import 'package:pokedex/src/pokemon_details/data/models/pokemon_move';
+import 'package:pokedex/src/pokemon_details/data/models/pokemon_move.dart';
 import '../calculators/type_effectiveness_calculator.dart';
 
 class DetailsRepository {

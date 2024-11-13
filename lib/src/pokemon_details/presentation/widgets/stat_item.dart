@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/src/pokemon_details/presentation/widgets/progress_bar.dart';	
+import 'package:pokedex/src/pokemon_details/presentation/widgets/progress_bar.dart';
 
 final Map<String, String> statLabels = {
   'hp': 'Hp',
@@ -56,7 +56,7 @@ class StatItem extends StatelessWidget {
               animation: animation,
               builder: (context, _) {
                 return ProgressBar(
-                  progress: animation.value * (progress ?? value / 100),
+                  progress: animation.value * (progress ?? value / 150),
                   color: color,
                 );
               },

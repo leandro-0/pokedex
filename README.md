@@ -69,9 +69,9 @@ La aplicación utiliza consultas GraphQL para obtener la información de la Pok�
 - Optamos por GraphQL para optimizar las consultas, permitiendo obtener solo los datos necesarios para cada pantalla, lo que mejora la velocidad y eficiencia de la aplicación.
 - El uso de GraphQL permite manejar los datos de los Pokémon en una estructura predecible y fácilmente escalable.
 
-## Clase PokemonStats:
+## App flow
 
-- Esta clase se implementa para manejar las estadísticas de cada Pokémon, como HP, ataque, defensa y velocidad. Incluye un método total para calcular la suma total de estadísticas, lo cual es útil en la pantalla de detalles.
+![Flow](flow.png)
 
 ## Avances y Mejoras Futuras
 

@@ -3,11 +3,13 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/data/repository/home_repository.dart';
+import 'package:pokedex/src/home/domains/enums/pokemon_sort.dart';
 import 'package:pokedex/src/home/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:pokedex/src/guess_pokemon/presentation/views/guess_pokemon_screen.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex/src/home/presentation/widgets/rounded_text_field.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/empty_indicator.dart';
+import 'package:pokedex/src/home/presentation/widgets/sort_menu_button.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _controller = ScrollController();
   PokemonFilter? _filter;
   final TextEditingController _searchController = TextEditingController();
+  PokemonSort _currentSort = PokemonSort.number;
 
   @override
   void initState() {
@@ -66,8 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isLoading = true);
 
-    final data =
-        await HomeRepository.getPokemons(_client, _page, filter: _filter);
+    final data = await HomeRepository.getPokemons(
+      _client,
+      _page,
+      filter: _filter,
+      orderBy: _currentSort.orderBy,
+    );
     if (data.isEmpty) {
       _thereIsMoreData = false;
     } else {
@@ -95,6 +102,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _onSortSelected(PokemonSort sort) {
+    setState(() {
+      _currentSort = sort;
+      _initialLoad();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,6 +117,10 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         forceMaterialTransparency: true,
         actions: [
+          SortMenuButton(
+            currentSort: _currentSort,
+            onSortSelected: _onSortSelected,
+          ),
           IconButton(
             tooltip: 'Guess the Pokémon!',
             icon: const Icon(

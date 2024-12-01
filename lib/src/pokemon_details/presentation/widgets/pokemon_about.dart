@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/pokemon_details/data/models/about_info.dart';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
+import 'package:pokedex/src/pokemon_details/presentation/providers/pokemon_info_notifier.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/about_heading.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/info_item.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_gender.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/weight_height_detail.dart';
+import 'package:provider/provider.dart';
 
 class PokemonAbout extends StatefulWidget {
   final int id;
@@ -20,6 +22,7 @@ class _PokemonAboutState extends State<PokemonAbout> {
   @override
   Widget build(BuildContext context) {
     final GraphQLClient client = GraphQLProvider.of(context).value;
+    final pkInfoNotifier = context.read<PokemonInfoNotifier>();
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -40,6 +43,11 @@ class _PokemonAboutState extends State<PokemonAbout> {
             );
           }
           final about = snapshot.data as AboutInfo;
+          if (pkInfoNotifier.pokemonDescription == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              pkInfoNotifier.pokemonDescription = about.description;
+            });
+          }
 
           return SingleChildScrollView(
             child: Column(

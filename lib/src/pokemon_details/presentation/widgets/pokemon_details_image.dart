@@ -5,7 +5,11 @@ import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_types.dart';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
+import 'package:pokedex/src/pokemon_details/presentation/providers/pokemon_info_notifier.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/add_favorite_button.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/pokemon_share_card.dart';
+import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
 
 class PokemonDetailsImage extends StatefulWidget {
   final PokemonTile pkBasicInfo;
@@ -19,11 +23,13 @@ class PokemonDetailsImage extends StatefulWidget {
 class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
   bool _isShiny = false;
   final player = AudioPlayer();
+  final _screenshotController = ScreenshotController();
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final imgSize = size.height * 0.2;
+    final pkInfoNotifier = context.watch<PokemonInfoNotifier>();
 
     return SizedBox(
       height: size.height * 0.37,
@@ -37,6 +43,28 @@ class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+          Positioned(
+            top: 90.0,
+            right: 5.0,
+            child: AnimatedOpacity(
+              opacity: pkInfoNotifier.pokemonDescription == null ? 0.0 : 1.0,
+              duration: const Duration(milliseconds: 300),
+              child: IconButton(
+                icon: const Icon(Icons.ios_share_rounded, color: Colors.white),
+                onPressed: () async {
+                  final card = PokemonShareCard(
+                    pk: widget.pkBasicInfo,
+                    cardText: pkInfoNotifier.pokemonDescription!,
+                    screenshotController: _screenshotController,
+                  );
+                  Utils.shareImageWithText(
+                    await _screenshotController.captureFromWidget(card),
+                    'Check out this Pokémon on the Pokedex app!',
+                  );
+                },
+              ),
             ),
           ),
           Positioned(

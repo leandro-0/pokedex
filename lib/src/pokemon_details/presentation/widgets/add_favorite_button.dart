@@ -18,8 +18,8 @@ class _AddFavoriteButtonState extends State<AddFavoriteButton> {
   void _loadInitialData() async {
     final favoriteId =
         await FavoritePokemonRepository.isFavorite(widget.pkBasicInfo.id);
+    if (!mounted) return;
     setState(() {
-      if (!context.mounted) return;
       _favoriteId = favoriteId;
       _isFavorite = favoriteId != null;
     });

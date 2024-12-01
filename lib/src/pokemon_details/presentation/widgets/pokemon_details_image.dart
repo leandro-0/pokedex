@@ -210,6 +210,7 @@ class _AddFavoriteButtonState extends State<AddFavoriteButton> {
                   );
                   if (_favoriteId == null) _isFavorite = false;
                 }
+                if (!context.mounted) return;
                 setState(() {});
               },
             ),

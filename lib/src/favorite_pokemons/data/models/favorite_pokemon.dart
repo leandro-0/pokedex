@@ -49,6 +49,7 @@ class FavoritePokemon {
       spriteUrl: spriteUrl,
       types: types,
       shinySpriteUrl: shinySpriteUrl,
+      spriteBytes: spriteBytes,
     );
   }
 }

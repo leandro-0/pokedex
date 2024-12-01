@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex/core/theme/app_theme.dart';
+import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_types.dart';
 import 'package:pokedex/src/pokemon_details/presentation/views/details_screen.dart';
@@ -20,11 +21,20 @@ class PokemonCard extends StatelessWidget {
       elevation: 3.0,
       shape: RoundedRectangleBorder(borderRadius: borderRadius),
       child: GestureDetector(
-        onTap: () => Navigator.pushNamed(
-          context,
-          DetailsScreen.routeName,
-          arguments: pk,
-        ),
+        onTap: () async {
+          final hasInternet = await Utils.hasInternetConnection();
+          if (!context.mounted) return;
+
+          if (hasInternet) {
+            Navigator.pushNamed(
+              context,
+              DetailsScreen.routeName,
+              arguments: pk,
+            );
+          } else {
+            Utils.showNoInternetDialog(context);
+          }
+        },
         child: Container(
           padding: const EdgeInsets.symmetric(
             horizontal: 8.0,

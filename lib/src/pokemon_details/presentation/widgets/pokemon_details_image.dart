@@ -159,6 +159,7 @@ class _AddFavoriteButtonState extends State<AddFavoriteButton> {
     final favoriteId =
         await FavoritePokemonRepository.isFavorite(widget.pkBasicInfo.id);
     setState(() {
+      if (!context.mounted) return;
       _favoriteId = favoriteId;
       _isFavorite = favoriteId != null;
     });
@@ -200,6 +201,7 @@ class _AddFavoriteButtonState extends State<AddFavoriteButton> {
                 setState(() => _isFavorite = !_isFavorite!);
 
                 if (!_isFavorite!) {
+                  if (_favoriteId == null) return;
                   await FavoritePokemonRepository.removeFavorite(_favoriteId!);
                   _favoriteId = null;
                 } else {

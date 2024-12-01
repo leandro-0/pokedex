@@ -16,12 +16,18 @@ dependencies:
   skeletonizer: ^1.4.2
   just_audio: ^0.9.42
   animate_do: ^3.3.4
+  objectbox: ^4.0.3
+  objectbox_flutter_libs: any
+  path_provider: ^2.1.5
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.14.1
+  build_runner: ^2.4.13
+  objectbox_generator: any
 
 flutter:
   uses-material-design: true

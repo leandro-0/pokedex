@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 class PokemonTile {
   final int id;
   final String name;
   final String spriteUrl;
   final List<String> types;
   final String? shinySpriteUrl;
+  final Uint8List? spriteBytes;
 
   PokemonTile({
     required this.id,
@@ -11,6 +14,7 @@ class PokemonTile {
     required this.spriteUrl,
     required this.types,
     this.shinySpriteUrl,
+    this.spriteBytes,
   });
 
   factory PokemonTile.fromJson(Map<String, dynamic> json) {

@@ -52,8 +52,10 @@ class PokemonCard extends StatelessWidget {
                     top: 7.0,
                     child: Hero(
                       tag: 'card-${pk.id}',
-                      child: Image.network(
-                        pk.spriteUrl,
+                      child: Image(
+                        image: pk.spriteBytes == null
+                            ? NetworkImage(pk.spriteUrl)
+                            : MemoryImage(pk.spriteBytes!),
                         width: imgSize,
                         height: imgSize,
                       ),

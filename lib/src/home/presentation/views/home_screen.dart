@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/favorite_pokemons/presentation/views/favorite_pokemons_screen.dart';
 import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/data/repository/home_repository.dart';
@@ -102,12 +103,23 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Pokédex'),
         centerTitle: true,
         forceMaterialTransparency: true,
+        leading: IconButton(
+          tooltip: 'Favorite Pokémon',
+          icon: Icon(
+            Icons.favorite_border_rounded,
+            color: Colors.red[300],
+          ),
+          onPressed: () => Navigator.pushNamed(
+            context,
+            FavoritePokemonsScreen.routeName,
+          ),
+        ),
         actions: [
           IconButton(
             tooltip: 'Guess the Pokémon!',
-            icon: const Icon(
+            icon: Icon(
               Icons.question_mark_rounded,
-              color: Colors.redAccent,
+              color: Colors.red[300],
             ),
             onPressed: () => Navigator.pushNamed(
               context,

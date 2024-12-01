@@ -1,29 +1,26 @@
+// pokemon_filter.dart
 class PokemonFilter {
   final String? name;
   final List<String>? types;
   final int? generation;
+  final int? number;
 
   const PokemonFilter({
     this.name,
     this.types,
     this.generation,
+    this.number,
   });
 
   Map<String, dynamic> toQueryVariables() {
-    final where = <String, dynamic>{
-      'id': {'_lte': 1025}
-    };
+    final List<Map<String, dynamic>> andConditions = [
+      {'id': {'_lte': 1025}},
+    ];
 
-    if (name != null && name!.isNotEmpty) {
-      where['name'] = {'_ilike': '$name%'};
-    }
-
-    if (types != null && types!.isNotEmpty) {
-      where['pokemon_v2_pokemontypes'] = {
-        'pokemon_v2_type': {
-          'name': {'_in': types}
-        }
-      };
+    if (number != null) {
+      andConditions.add({'id': {'_eq': number}});
+    } else if (name != null && name!.isNotEmpty) {
+      andConditions.add({'name': {'_ilike': '$name%'}});
     }
 
     if (generation != null && generation != -1) {
@@ -38,9 +35,19 @@ class PokemonFilter {
         8: {'_gte': 810, '_lte': 905},
         9: {'_gte': 906, '_lte': 1025},
       };
-      where['id'] = ranges[generation];
+      andConditions.add({'id': ranges[generation]!});
     }
 
-    return where;
+    if (types != null && types!.isNotEmpty) {
+      andConditions.add({
+        'pokemon_v2_pokemontypes': {
+          'pokemon_v2_type': {
+            'name': {'_in': types}
+          }
+        }
+      });
+    }
+
+    return {'_and': andConditions};
   }
 }

@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   PokemonFilter? _filter;
   final TextEditingController _searchController = TextEditingController();
   PokemonSort _currentSort = PokemonSort.number;
+  final TextEditingController _numberController = TextEditingController();
 
   @override
   void initState() {
@@ -53,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _numberController.dispose();
+
     _controller.dispose();
     super.dispose();
   }
@@ -87,20 +90,20 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isLoading = false);
   }
 
-  void _updateFilter({
-    String? name,
-    List<String>? types,
-    int? generation,
-  }) {
-    setState(() {
-      _filter = PokemonFilter(
-        name: name ?? _filter?.name,
-        types: types ?? _filter?.types,
-        generation: generation ?? _filter?.generation,
-      );
-      _initialLoad();
-    });
-  }
+  void _updateFilter(String input) {
+  final trimmedInput = input.trim();
+  final number = int.tryParse(trimmedInput);
+
+  setState(() {
+    _filter = PokemonFilter(
+      name: number == null && trimmedInput.isNotEmpty ? trimmedInput : null,
+      number: number,
+      types: _filter?.types,
+      generation: _filter?.generation,
+    );
+    _initialLoad();
+  });
+}
 
   void _onSortSelected(PokemonSort sort) {
     setState(() {
@@ -146,11 +149,11 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: RoundedTextField(
-                    controller: _searchController,
-                    hintText: 'Search by name',
-                    prefixIcon: const Icon(Icons.search),
-                    onChanged: (value) => _updateFilter(name: value),
-                  ),
+  controller: _searchController,
+  hintText: 'Search by name or number',
+  prefixIcon: const Icon(Icons.search),
+  onChanged: _updateFilter,
+),
                 ),
                 IconButton(
                   tooltip: 'Filters',
@@ -172,11 +175,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     if (result != null) {
                       final (types, generation) = result;
-                      _updateFilter(
+                      _filter = PokemonFilter(
                         name: _searchController.text,
                         types: types.isEmpty ? null : types,
                         generation: generation,
+                        number: _filter?.number,
                       );
+                      _initialLoad();
                     }
                   },
                 ),

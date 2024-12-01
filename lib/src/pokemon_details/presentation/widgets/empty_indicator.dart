@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 
 class EmptyIndicator extends StatelessWidget {
   final String text;
+  final EdgeInsets padding;
 
-  const EmptyIndicator({super.key, required this.text});
+  const EmptyIndicator({
+    super.key,
+    required this.text,
+    this.padding = const EdgeInsets.all(20.0),
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: padding,
         child: Text(
           text,
           style: const TextStyle(

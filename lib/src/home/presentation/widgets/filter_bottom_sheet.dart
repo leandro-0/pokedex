@@ -277,8 +277,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
       child: SelectableList<Ability>(
         items: abilities,
         isSelected: (ability) => selectedAbility?.apiName == ability.apiName,
-        onSelected: (index) =>
-            setState(() => selectedAbility = abilities[index]),
+        onSelected: (ability) => setState(() => selectedAbility = ability),
+        onUnselected: (_) => setState(() => selectedAbility = null),
         leadingBuilder: (ability) => Container(
           width: 32.0,
           height: 32.0,
@@ -309,8 +309,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
       child: SelectableList<String>(
         items: generations.keys.toList(),
         isSelected: (gen) => selectedGeneration == generations[gen],
-        onSelected: (i) =>
-            setState(() => selectedGeneration = generations.values.toList()[i]),
+        onSelected: (gen) =>
+            setState(() => selectedGeneration = generations[gen]),
+        onUnselected: (_) => setState(() => selectedGeneration = null),
       ),
     );
   }

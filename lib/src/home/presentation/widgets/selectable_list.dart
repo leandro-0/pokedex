@@ -4,7 +4,8 @@ class SelectableList<T> extends StatefulWidget {
   final List<T> items;
   final bool pinSelected;
   final bool Function(T) isSelected;
-  final void Function(int index) onSelected;
+  final void Function(T) onSelected;
+  final void Function(T) onUnselected;
   final Widget Function(T)? leadingBuilder;
 
   const SelectableList({
@@ -12,6 +13,7 @@ class SelectableList<T> extends StatefulWidget {
     required this.items,
     required this.isSelected,
     required this.onSelected,
+    required this.onUnselected,
     this.leadingBuilder,
     this.pinSelected = true,
   });
@@ -61,7 +63,13 @@ class _SelectableListState<T> extends State<SelectableList<T>> {
                         isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                onTap: () => widget.onSelected(index),
+                onTap: () {
+                  if (isSelected) {
+                    widget.onUnselected(item);
+                  } else {
+                    widget.onSelected(item);
+                  }
+                },
                 selected: isSelected,
                 selectedTileColor: Colors.green[500],
                 tileColor: Colors.transparent,

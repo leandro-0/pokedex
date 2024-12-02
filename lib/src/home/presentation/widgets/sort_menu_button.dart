@@ -24,7 +24,7 @@ class SortMenuButton extends StatelessWidget {
       ),
       offset: const Offset(0, 8),
       onSelected: onSortSelected,
-      itemBuilder: (BuildContext context) {
+      itemBuilder: (context) {
         return PokemonSort.values.map((PokemonSort sort) {
           final isSelected = currentSort == sort;
           return PopupMenuItem<PokemonSort>(
@@ -54,14 +54,16 @@ class SortMenuButton extends StatelessWidget {
                         : theme.colorScheme.onSurface,
                   ),
                   const SizedBox(width: 12),
-                  Text(
-                    sort.displayName,
-                    style: TextStyle(
-                      color: isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.normal,
+                  Expanded(
+                    child: Text(
+                      sort.displayName,
+                      style: TextStyle(
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurface,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                      ),
                     ),
                   ),
                 ],

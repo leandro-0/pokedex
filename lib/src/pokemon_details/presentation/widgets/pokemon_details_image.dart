@@ -5,6 +5,7 @@ import 'package:pokedex/core/utils/utils.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_types.dart';
 import 'package:pokedex/src/pokemon_details/data/repository/details_repository.dart';
+import 'package:pokedex/src/pokemon_details/presentation/widgets/add_favorite_button.dart';
 
 class PokemonDetailsImage extends StatefulWidget {
   final PokemonTile pkBasicInfo;
@@ -29,6 +30,7 @@ class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
       width: double.infinity,
       child: Stack(
         children: [
+          AddFavoriteButton(pkBasicInfo: widget.pkBasicInfo),
           Positioned(
             top: 40.0,
             left: 10.0,
@@ -38,19 +40,24 @@ class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
             ),
           ),
           Positioned(
-            top: 40.0,
-            right: 10.0,
-            child: IconButton(
-              icon: const Icon(Icons.favorite_border, color: Colors.white),
-              onPressed: () {},
-            ),
-          ),
-          Positioned(
             right: 20.0,
             bottom: 10.0,
             child: PokemonTypes(
               types: widget.pkBasicInfo.types,
               direction: Axis.vertical,
+            ),
+          ),
+          Positioned(
+            left: 10.0,
+            bottom: 10.0,
+            child: IconButton(
+              tooltip: 'Shiny version',
+              onPressed: () => setState(() => _isShiny =
+                  !_isShiny && widget.pkBasicInfo.shinySpriteUrl != null),
+              icon: Icon(
+                Icons.auto_awesome_rounded,
+                color: Colors.white.withOpacity(0.8),
+              ),
             ),
           ),
           Align(
@@ -93,19 +100,6 @@ class _PokemonDetailsImageState extends State<PokemonDetailsImage> {
               '#${widget.pkBasicInfo.id.toString().padLeft(4, '0')}',
               style: TextStyle(
                 fontSize: 16.0,
-                color: Colors.white.withOpacity(0.8),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 10.0,
-            bottom: 10.0,
-            child: IconButton(
-              tooltip: 'Shiny version',
-              onPressed: () => setState(() => _isShiny =
-                  !_isShiny && widget.pkBasicInfo.shinySpriteUrl != null),
-              icon: Icon(
-                Icons.auto_awesome_rounded,
                 color: Colors.white.withOpacity(0.8),
               ),
             ),

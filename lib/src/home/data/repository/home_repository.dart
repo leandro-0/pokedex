@@ -62,25 +62,50 @@ class HomeRepository {
         .toList();
   }
 
-static List<Map<String, dynamic>> _getOrderByVariable(String? orderBy) {
-  switch (orderBy) {
-    case 'number':
-      return [{'id': 'asc'}];
-    case 'name':
-      return [{'pokemon_v2_pokemonspecy': {'name': 'asc'}}];
-    case 'abilities':
-      return [{'pokemon_v2_pokemonabilities_aggregate': {'count': 'asc'}}];
-    case 'type':
-      return [
-        {
-          'pokemon_v2_pokemontypes_aggregate': {
-            'min': {'type_id': 'asc'}
-          }
-        },
-        {'id': 'asc'}
-      ];
-    default:
-      return [{'id': 'asc'}];
+  static List<Map<String, dynamic>> _getOrderByVariable(String? orderBy) {
+    switch (orderBy) {
+      case 'number':
+        return [{'id': 'asc'}];
+      case 'name':
+        return [{'pokemon_v2_pokemonspecy': {'name': 'asc'}}];
+      case 'abilities':
+        return [{'pokemon_v2_pokemonabilities_aggregate': {'count': 'asc'}}];
+      case 'type':
+        return [
+          {
+            'pokemon_v2_pokemontypes_aggregate': {
+              'min': {'type_id': 'asc'}
+            }
+          },
+          {'id': 'asc'}
+        ];
+      default:
+        return [{'id': 'asc'}];
+    }
   }
-}
+
+  static Future<List<String>> getAbilities(GraphQLClient client) async {
+    const String query = '''
+    query samplePokeAPIquery {
+      pokemon_v2_ability {
+        pokemon_v2_abilitynames(where: {pokemon_v2_language: {name: {_eq: "en"}}}) {
+          name
+        }
+      }
+    }
+    ''';
+
+    final QueryResult result = await client.query(
+      QueryOptions(document: gql(query)),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final List abilities = result.data?['pokemon_v2_ability'] ?? [];
+    return abilities
+        .map<String>((ability) => ability['pokemon_v2_abilitynames'][0]['name'] as String)
+        .toList();
+  }
 }

@@ -1,9 +1,11 @@
+import 'package:pokedex/src/home/data/models/ability.dart';
+
 class PokemonFilter {
   final String? name;
   final List<String>? types;
   final int? generation;
   final int? number;
-  final String? ability;
+  final Ability? ability;
 
   const PokemonFilter({
     this.name,
@@ -45,11 +47,11 @@ class PokemonFilter {
       andConditions.add({'id': ranges[generation]!});
     }
 
-    if (ability != null && ability!.isNotEmpty) {
+    if (ability != null && ability!.apiName.isNotEmpty) {
       andConditions.add({
         'pokemon_v2_pokemonabilities': {
           'pokemon_v2_ability': {
-            'name': {'_ilike': '$ability'}
+            'name': {'_ilike': ability!.apiName}
           }
         }
       });

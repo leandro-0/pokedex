@@ -43,4 +43,35 @@ class AppTheme {
     'fairy': Color(0xFFef70ef),
     'stellar': Color(0xFF40b5a5),
   };
+
+  static const Map<String, Map<String, Color>> generationColors = {
+    'III': {
+      'background': Color(0xFF96d9d6), // Soft teal
+      'foreground': Color(0xFF305f60), // Dark teal
+    },
+    'IV': {
+      'background': Color(0xFFa8b9e0), // Soft lavender blue
+      'foreground': Color(0xFF3b4f7e), // Deep blue
+    },
+    'V': {
+      'background': Color(0xFFe0e0e0), // Neutral light gray
+      'foreground': Color(0xFF6d6d6d), // Charcoal gray
+    },
+    'VI': {
+      'background': Color(0xFFf4d8a8), // Pastel yellow-orange
+      'foreground': Color(0xFF815c28), // Warm brown
+    },
+    'VII': {
+      'background': Color(0xFFf7b3c2), // Pale pink
+      'foreground': Color(0xFF8f4a56), // Deep rose
+    },
+    'VIII': {
+      'background': Color(0xFFc5b0d5), // Light mauve
+      'foreground': Color(0xFF5e4473), // Dark purple
+    },
+    'IX': {
+      'background': Color(0xFFd5e6a3), // Soft green-yellow
+      'foreground': Color(0xFF62773d), // Olive green
+    },
+  };
 }

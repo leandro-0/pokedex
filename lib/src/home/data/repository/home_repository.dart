@@ -1,4 +1,5 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/home/data/models/ability.dart';
 import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/domains/enums/pokemon_sort.dart';
@@ -87,12 +88,18 @@ class HomeRepository {
     }
   }
 
-  static Future<List<String>> getAbilities(GraphQLClient client) async {
+  static Future<List<Ability>> getAbilities(GraphQLClient client) async {
     const String query = '''
-    query samplePokeAPIquery {
-      pokemon_v2_ability {
+    query getAbilities {
+      pokemon_v2_ability(order_by: {name: asc}, where: {is_main_series: {_eq: true}}) {
         pokemon_v2_abilitynames(where: {pokemon_v2_language: {name: {_eq: "en"}}}) {
           name
+          pokemon_v2_ability {
+            name
+            pokemon_v2_generation {
+              name
+            }
+          }
         }
       }
     }
@@ -108,8 +115,7 @@ class HomeRepository {
 
     final List abilities = result.data?['pokemon_v2_ability'] ?? [];
     return abilities
-        .map<String>((ability) =>
-            ability['pokemon_v2_abilitynames'][0]['name'] as String)
+        .map<Ability>((ability) => Ability.fromJson(ability))
         .toList();
   }
 }

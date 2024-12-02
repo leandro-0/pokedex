@@ -1,6 +1,7 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
+import 'package:pokedex/src/home/domains/enums/pokemon_sort.dart';
 
 class HomeRepository {
   static Future<List<PokemonTile>> getPokemons(
@@ -8,7 +9,7 @@ class HomeRepository {
     int page, {
     int pageSize = 20,
     PokemonFilter? filter,
-    String? orderBy,
+    required PokemonSort orderBy,
   }) async {
     final query = gql(r'''
       query pokemonsList($limit: Int, $offset: Int, $where: pokemon_v2_pokemon_bool_exp, $orderBy: [pokemon_v2_pokemon_order_by!]) {
@@ -39,9 +40,10 @@ class HomeRepository {
       }
     ''');
 
-    final whereCondition = filter?.toQueryVariables() ?? {
-      'id': {'_lte': 1025}
-    };
+    final whereCondition = filter?.toQueryVariables() ??
+        {
+          'id': {'_lte': 1025}
+        };
 
     final response = await client.query(QueryOptions(
       document: query,
@@ -62,25 +64,26 @@ class HomeRepository {
         .toList();
   }
 
-  static List<Map<String, dynamic>> _getOrderByVariable(String? orderBy) {
-    switch (orderBy) {
-      case 'number':
-        return [{'id': 'asc'}];
-      case 'name':
-        return [{'pokemon_v2_pokemonspecy': {'name': 'asc'}}];
-      case 'abilities':
-        return [{'pokemon_v2_pokemonabilities_aggregate': {'count': 'asc'}}];
-      case 'type':
-        return [
-          {
-            'pokemon_v2_pokemontypes_aggregate': {
-              'min': {'type_id': 'asc'}
-            }
-          },
-          {'id': 'asc'}
-        ];
-      default:
-        return [{'id': 'asc'}];
+  static List<Map<String, dynamic>> _getOrderByVariable(PokemonSort orderBy) {
+    if (orderBy.isType) {
+      return [
+        {
+          'pokemon_v2_pokemontypes_aggregate': {
+            'min': {'type_id': orderBy.order}
+          }
+        },
+        {'id': orderBy.order}
+      ];
+    } else if (orderBy.isName) {
+      return [
+        {
+          'pokemon_v2_pokemonspecy': {'name': orderBy.order}
+        }
+      ];
+    } else {
+      return [
+        {'id': orderBy.order}
+      ];
     }
   }
 
@@ -105,7 +108,8 @@ class HomeRepository {
 
     final List abilities = result.data?['pokemon_v2_ability'] ?? [];
     return abilities
-        .map<String>((ability) => ability['pokemon_v2_abilitynames'][0]['name'] as String)
+        .map<String>((ability) =>
+            ability['pokemon_v2_abilitynames'][0]['name'] as String)
         .toList();
   }
 }

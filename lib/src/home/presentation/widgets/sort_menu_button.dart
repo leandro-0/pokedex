@@ -18,10 +18,7 @@ class SortMenuButton extends StatelessWidget {
     return PopupMenuButton<PokemonSort>(
       tooltip: 'Sort Pokémon',
       position: PopupMenuPosition.under,
-      icon: Icon(
-        Icons.sort_rounded,
-        color: theme.colorScheme.primary,
-      ),
+      icon: const Icon(Icons.sort_rounded),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -39,7 +36,7 @@ class SortMenuButton extends StatelessWidget {
                 horizontal: 12.0,
               ),
               decoration: BoxDecoration(
-                color: isSelected 
+                color: isSelected
                     ? theme.colorScheme.primaryContainer.withOpacity(0.2)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(8),
@@ -48,11 +45,11 @@ class SortMenuButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    isSelected 
+                    isSelected
                         ? Icons.radio_button_checked
                         : Icons.radio_button_unchecked,
                     size: 20,
-                    color: isSelected 
+                    color: isSelected
                         ? theme.colorScheme.primary
                         : theme.colorScheme.onSurface,
                   ),
@@ -60,12 +57,11 @@ class SortMenuButton extends StatelessWidget {
                   Text(
                     sort.displayName,
                     style: TextStyle(
-                      color: isSelected 
+                      color: isSelected
                           ? theme.colorScheme.primary
                           : theme.colorScheme.onSurface,
-                      fontWeight: isSelected 
-                          ? FontWeight.w600
-                          : FontWeight.normal,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.normal,
                     ),
                   ),
                 ],

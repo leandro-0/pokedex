@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _controller = ScrollController();
   PokemonFilter? _filter;
   final TextEditingController _searchController = TextEditingController();
-  PokemonSort _currentSort = PokemonSort.number;
+  PokemonSort _currentSort = PokemonSort.numberAsc;
   final TextEditingController _numberController = TextEditingController();
   Timer? _timer;
   String? _previousKeyword;
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _client,
       _page,
       filter: _filter,
-      orderBy: _currentSort.orderBy,
+      orderBy: _currentSort,
     );
     if (data.isEmpty) {
       _thereIsMoreData = false;
@@ -179,10 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          SortMenuButton(
-            currentSort: _currentSort,
-            onSortSelected: _onSortSelected,
-          ),
           IconButton(
             tooltip: 'Guess the Pokémon!',
             icon: Icon(
@@ -218,6 +214,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   tooltip: 'Filters',
                   icon: const Icon(Icons.filter_alt_rounded),
                   onPressed: _showFilterBottomSheet,
+                ),
+                SortMenuButton(
+                  currentSort: _currentSort,
+                  onSortSelected: _onSortSelected,
                 ),
               ],
             ),

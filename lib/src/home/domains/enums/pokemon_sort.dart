@@ -1,32 +1,45 @@
 enum PokemonSort {
-  number,
-  name,
-  abilities,
-  type;
+  numberAsc,
+  numberDesc,
+  nameAsc,
+  nameDesc,
+  typeAsc,
+  typeDesc;
 
   String get displayName {
     switch (this) {
-      case PokemonSort.number:
-        return 'Número';
-      case PokemonSort.name:
-        return 'Nombre';
-      case PokemonSort.abilities:
-        return 'Habilidades';
-      case PokemonSort.type:
-        return 'Tipo';
+      case PokemonSort.numberAsc:
+        return 'Number (asc)';
+      case PokemonSort.nameAsc:
+        return 'Name (asc)';
+      case PokemonSort.typeAsc:
+        return 'Type (asc)';
+      case PokemonSort.numberDesc:
+        return 'Number (desc)';
+      case PokemonSort.nameDesc:
+        return 'Name (desc)';
+      case PokemonSort.typeDesc:
+        return 'Type (desc)';
     }
   }
 
-  String get orderBy {
+  bool get isNumber =>
+      this == PokemonSort.numberAsc || this == PokemonSort.numberDesc;
+  bool get isName =>
+      this == PokemonSort.nameAsc || this == PokemonSort.nameDesc;
+  bool get isType =>
+      this == PokemonSort.typeAsc || this == PokemonSort.typeDesc;
+
+  String get order {
     switch (this) {
-      case PokemonSort.number:
-        return 'number';
-      case PokemonSort.name:
-        return 'name';
-      case PokemonSort.abilities:
-        return 'abilities';
-      case PokemonSort.type:
-        return 'type';
+      case PokemonSort.numberAsc:
+      case PokemonSort.nameAsc:
+      case PokemonSort.typeAsc:
+        return 'asc';
+      case PokemonSort.numberDesc:
+      case PokemonSort.nameDesc:
+      case PokemonSort.typeDesc:
+        return 'desc';
     }
   }
 }

@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _searchController.dispose();
     _numberController.dispose();
-
     _controller.dispose();
     super.dispose();
   }
@@ -91,25 +90,54 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _updateFilter(String input) {
-  final trimmedInput = input.trim();
-  final number = int.tryParse(trimmedInput);
+    final trimmedInput = input.trim();
+    final number = int.tryParse(trimmedInput);
 
-  setState(() {
-    _filter = PokemonFilter(
-      name: number == null && trimmedInput.isNotEmpty ? trimmedInput : null,
-      number: number,
-      types: _filter?.types,
-      generation: _filter?.generation,
-    );
-    _initialLoad();
-  });
-}
+    setState(() {
+      _filter = PokemonFilter(
+        name: number == null && trimmedInput.isNotEmpty ? trimmedInput : null,
+        number: number,
+        types: _filter?.types,
+        generation: _filter?.generation,
+        ability: _filter?.ability,
+      );
+      _initialLoad();
+    });
+  }
 
   void _onSortSelected(PokemonSort sort) {
     setState(() {
       _currentSort = sort;
       _initialLoad();
     });
+  }
+
+  Future<void> _showFilterBottomSheet() async {
+    final result = await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows custom height control
+      builder: (_) => FilterBottomSheet(
+        selectedTypes: _filter?.types,
+        selectedGeneration: _filter?.generation,
+        selectedAbility: _filter?.ability,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+    );
+    if (result != null) {
+      final (types, generation, ability) = result;
+      setState(() {
+        _filter = PokemonFilter(
+          name: _searchController.text,
+          types: types.isEmpty ? null : types,
+          generation: generation,
+          ability: ability,
+          number: _filter?.number,
+        );
+        _initialLoad();
+      });
+    }
   }
 
   @override
@@ -149,41 +177,16 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: RoundedTextField(
-  controller: _searchController,
-  hintText: 'Search by name or number',
-  prefixIcon: const Icon(Icons.search),
-  onChanged: _updateFilter,
-),
+                    controller: _searchController,
+                    hintText: 'Search by name or number',
+                    prefixIcon: const Icon(Icons.search),
+                    onChanged: _updateFilter,
+                  ),
                 ),
                 IconButton(
                   tooltip: 'Filters',
                   icon: const Icon(Icons.filter_alt_rounded),
-                  onPressed: () async {
-                    final result =
-                        await showModalBottomSheet<(List<String>, int?)>(
-                      context: context,
-                      builder: (_) => FilterBottomSheet(
-                        selectedTypes: _filter?.types,
-                        selectedGeneration: _filter?.generation,
-                      ),
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20)),
-                      ),
-                    );
-
-                    if (result != null) {
-                      final (types, generation) = result;
-                      _filter = PokemonFilter(
-                        name: _searchController.text,
-                        types: types.isEmpty ? null : types,
-                        generation: generation,
-                        number: _filter?.number,
-                      );
-                      _initialLoad();
-                    }
-                  },
+                  onPressed: _showFilterBottomSheet,
                 ),
               ],
             ),

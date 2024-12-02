@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/favorite_pokemons/presentation/views/favorite_pokemons_screen.dart';
@@ -31,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   PokemonSort _currentSort = PokemonSort.number;
   final TextEditingController _numberController = TextEditingController();
+  Timer? _timer;
+  String? _previousKeyword;
 
   @override
   void initState() {
@@ -68,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadPokemonList() async {
-    if (!_thereIsMoreData || _isLoading) return;
+    if (!_thereIsMoreData || _isLoading || !mounted) return;
 
     setState(() => _isLoading = true);
 
@@ -87,23 +91,38 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
-    setState(() => _isLoading = false);
+    setState(() {
+      _isLoading = false;
+      _previousKeyword = _searchController.text;
+    });
   }
 
   void _updateFilter(String input) {
+    _timer?.cancel();
+
     final trimmedInput = input.trim();
     final number = int.tryParse(trimmedInput);
+    final keyword = number != null ? number.toString() : trimmedInput;
 
-    setState(() {
-      _filter = PokemonFilter(
-        name: number == null && trimmedInput.isNotEmpty ? trimmedInput : null,
-        number: number,
-        types: _filter?.types,
-        generation: _filter?.generation,
-        ability: _filter?.ability,
-      );
-      _initialLoad();
-    });
+    if (keyword.isNotEmpty && keyword != _previousKeyword || input.isEmpty) {
+      setState(() {
+        _previousKeyword = keyword;
+        _timer = Timer.periodic(const Duration(milliseconds: 300), (tmr) {
+          _filter = PokemonFilter(
+            name:
+                number == null && trimmedInput.isNotEmpty ? trimmedInput : null,
+            number: number,
+            types: _filter?.types,
+            generation: _filter?.generation,
+            ability: _filter?.ability,
+          );
+
+          _initialLoad();
+
+          tmr.cancel();
+        });
+      });
+    }
   }
 
   void _onSortSelected(PokemonSort sort) {

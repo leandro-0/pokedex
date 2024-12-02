@@ -30,7 +30,12 @@ cd pokedex
 flutter pub get
 ```
 
-3. Ejecutar la aplicación:
+3. Generar entidades de ObjectBox:
+```bash
+dart run build_runner build
+```
+
+4. Ejecutar la aplicación:
 ```bash
 flutter run
 ```

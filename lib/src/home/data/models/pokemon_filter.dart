@@ -1,29 +1,36 @@
-// pokemon_filter.dart
 class PokemonFilter {
   final String? name;
   final List<String>? types;
   final int? generation;
   final int? number;
+  final String? ability;
 
   const PokemonFilter({
     this.name,
     this.types,
     this.generation,
     this.number,
+    this.ability,
   });
 
   Map<String, dynamic> toQueryVariables() {
     final List<Map<String, dynamic>> andConditions = [
-      {'id': {'_lte': 1025}},
+      {
+        'id': {'_lte': 1025}
+      },
     ];
 
     if (number != null) {
-      andConditions.add({'id': {'_eq': number}});
+      andConditions.add({
+        'id': {'_eq': number}
+      });
     } else if (name != null && name!.isNotEmpty) {
-      andConditions.add({'name': {'_ilike': '$name%'}});
+      andConditions.add({
+        'name': {'_ilike': '$name%'}
+      });
     }
 
-    if (generation != null && generation != -1) {
+    if (generation != null) {
       final ranges = {
         1: {'_gte': 1, '_lte': 151},
         2: {'_gte': 152, '_lte': 251},
@@ -36,6 +43,16 @@ class PokemonFilter {
         9: {'_gte': 906, '_lte': 1025},
       };
       andConditions.add({'id': ranges[generation]!});
+    }
+
+    if (ability != null && ability!.isNotEmpty) {
+      andConditions.add({
+        'pokemon_v2_pokemonabilities': {
+          'pokemon_v2_ability': {
+            'name': {'_ilike': '$ability'}
+          }
+        }
+      });
     }
 
     if (types != null && types!.isNotEmpty) {

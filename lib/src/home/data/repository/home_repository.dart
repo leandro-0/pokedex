@@ -8,14 +8,15 @@ class HomeRepository {
     int page, {
     int pageSize = 20,
     PokemonFilter? filter,
+    String? orderBy,
   }) async {
     final query = gql(r'''
-      query pokemonsList($limit: Int, $offset: Int, $where: pokemon_v2_pokemon_bool_exp) {
+      query pokemonsList($limit: Int, $offset: Int, $where: pokemon_v2_pokemon_bool_exp, $orderBy: [pokemon_v2_pokemon_order_by!]) {
         pokemon_v2_pokemon(
           limit: $limit, 
           offset: $offset, 
           where: $where,
-          order_by: {id: asc}
+          order_by: $orderBy
         ) {
           id
           pokemon_v2_pokemonspecy {
@@ -38,10 +39,9 @@ class HomeRepository {
       }
     ''');
 
-    final whereCondition = filter?.toQueryVariables() ??
-        {
-          'id': {'_lte': 1025}
-        };
+    final whereCondition = filter?.toQueryVariables() ?? {
+      'id': {'_lte': 1025}
+    };
 
     final response = await client.query(QueryOptions(
       document: query,
@@ -49,6 +49,7 @@ class HomeRepository {
         'limit': pageSize,
         'offset': page * pageSize,
         'where': whereCondition,
+        'orderBy': _getOrderByVariable(orderBy),
       },
     ));
 
@@ -58,6 +59,53 @@ class HomeRepository {
 
     return response.data?['pokemon_v2_pokemon']
         .map<PokemonTile>((pokemon) => PokemonTile.fromJson(pokemon))
+        .toList();
+  }
+
+  static List<Map<String, dynamic>> _getOrderByVariable(String? orderBy) {
+    switch (orderBy) {
+      case 'number':
+        return [{'id': 'asc'}];
+      case 'name':
+        return [{'pokemon_v2_pokemonspecy': {'name': 'asc'}}];
+      case 'abilities':
+        return [{'pokemon_v2_pokemonabilities_aggregate': {'count': 'asc'}}];
+      case 'type':
+        return [
+          {
+            'pokemon_v2_pokemontypes_aggregate': {
+              'min': {'type_id': 'asc'}
+            }
+          },
+          {'id': 'asc'}
+        ];
+      default:
+        return [{'id': 'asc'}];
+    }
+  }
+
+  static Future<List<String>> getAbilities(GraphQLClient client) async {
+    const String query = '''
+    query samplePokeAPIquery {
+      pokemon_v2_ability {
+        pokemon_v2_abilitynames(where: {pokemon_v2_language: {name: {_eq: "en"}}}) {
+          name
+        }
+      }
+    }
+    ''';
+
+    final QueryResult result = await client.query(
+      QueryOptions(document: gql(query)),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final List abilities = result.data?['pokemon_v2_ability'] ?? [];
+    return abilities
+        .map<String>((ability) => ability['pokemon_v2_abilitynames'][0]['name'] as String)
         .toList();
   }
 }

@@ -3,11 +3,13 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_filter.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
 import 'package:pokedex/src/home/data/repository/home_repository.dart';
+import 'package:pokedex/src/home/domains/enums/pokemon_sort.dart';
 import 'package:pokedex/src/home/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:pokedex/src/guess_pokemon/presentation/views/guess_pokemon_screen.dart';
 import 'package:pokedex/src/home/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex/src/home/presentation/widgets/rounded_text_field.dart';
 import 'package:pokedex/src/pokemon_details/presentation/widgets/empty_indicator.dart';
+import 'package:pokedex/src/home/presentation/widgets/sort_menu_button.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
@@ -26,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _controller = ScrollController();
   PokemonFilter? _filter;
   final TextEditingController _searchController = TextEditingController();
+  PokemonSort _currentSort = PokemonSort.number;
+  final TextEditingController _numberController = TextEditingController();
 
   @override
   void initState() {
@@ -50,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _numberController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -66,8 +71,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isLoading = true);
 
-    final data =
-        await HomeRepository.getPokemons(_client, _page, filter: _filter);
+    final data = await HomeRepository.getPokemons(
+      _client,
+      _page,
+      filter: _filter,
+      orderBy: _currentSort.orderBy,
+    );
     if (data.isEmpty) {
       _thereIsMoreData = false;
     } else {
@@ -80,19 +89,55 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isLoading = false);
   }
 
-  void _updateFilter({
-    String? name,
-    List<String>? types,
-    int? generation,
-  }) {
+  void _updateFilter(String input) {
+    final trimmedInput = input.trim();
+    final number = int.tryParse(trimmedInput);
+
     setState(() {
       _filter = PokemonFilter(
-        name: name ?? _filter?.name,
-        types: types ?? _filter?.types,
-        generation: generation ?? _filter?.generation,
+        name: number == null && trimmedInput.isNotEmpty ? trimmedInput : null,
+        number: number,
+        types: _filter?.types,
+        generation: _filter?.generation,
+        ability: _filter?.ability,
       );
       _initialLoad();
     });
+  }
+
+  void _onSortSelected(PokemonSort sort) {
+    setState(() {
+      _currentSort = sort;
+      _initialLoad();
+    });
+  }
+
+  Future<void> _showFilterBottomSheet() async {
+    final result = await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows custom height control
+      builder: (_) => FilterBottomSheet(
+        selectedTypes: _filter?.types,
+        selectedGeneration: _filter?.generation,
+        selectedAbility: _filter?.ability,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+    );
+    if (result != null) {
+      final (types, generation, ability) = result;
+      setState(() {
+        _filter = PokemonFilter(
+          name: _searchController.text,
+          types: types.isEmpty ? null : types,
+          generation: generation,
+          ability: ability,
+          number: _filter?.number,
+        );
+        _initialLoad();
+      });
+    }
   }
 
   @override
@@ -103,6 +148,10 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         forceMaterialTransparency: true,
         actions: [
+          SortMenuButton(
+            currentSort: _currentSort,
+            onSortSelected: _onSortSelected,
+          ),
           IconButton(
             tooltip: 'Guess the Pokémon!',
             icon: const Icon(
@@ -129,38 +178,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: RoundedTextField(
                     controller: _searchController,
-                    hintText: 'Search by name',
+                    hintText: 'Search by name or number',
                     prefixIcon: const Icon(Icons.search),
-                    onChanged: (value) => _updateFilter(name: value),
+                    onChanged: _updateFilter,
                   ),
                 ),
                 IconButton(
                   tooltip: 'Filters',
                   icon: const Icon(Icons.filter_alt_rounded),
-                  onPressed: () async {
-                    final result =
-                        await showModalBottomSheet<(List<String>, int?)>(
-                      context: context,
-                      builder: (_) => FilterBottomSheet(
-                        selectedTypes: _filter?.types,
-                        selectedGeneration: _filter?.generation,
-                      ),
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20)),
-                      ),
-                    );
-
-                    if (result != null) {
-                      final (types, generation) = result;
-                      _updateFilter(
-                        name: _searchController.text,
-                        types: types.isEmpty ? null : types,
-                        generation: generation,
-                      );
-                    }
-                  },
+                  onPressed: _showFilterBottomSheet,
                 ),
               ],
             ),

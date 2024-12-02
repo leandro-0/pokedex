@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex/src/pokemon_details/presentation/widgets/about_heading.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex/src/home/data/repository/home_repository.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   final List<String>? selectedTypes;
   final int? selectedGeneration;
+  final String? selectedAbility;
 
   const FilterBottomSheet({
     super.key,
     this.selectedTypes,
     this.selectedGeneration,
+    this.selectedAbility,
   });
 
   @override
-  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
+  _FilterBottomSheetState createState() => _FilterBottomSheetState();
 }
 
-class _FilterBottomSheetState extends State<FilterBottomSheet> {
+class _FilterBottomSheetState extends State<FilterBottomSheet>
+    with SingleTickerProviderStateMixin {
   static const List<String> pokemonTypes = [
     'normal',
     'fire',
     'water',
-    'grass',
     'electric',
+    'grass',
     'ice',
     'fighting',
     'poison',
@@ -35,7 +39,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     'dark',
     'dragon',
     'steel',
-    'fairy'
+    'fairy',
   ];
 
   static const Map<int, String> generations = {
@@ -73,12 +77,48 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   List<String> selectedTypes = [];
   int? selectedGeneration;
+  String? selectedAbility;
+  late TabController _tabController;
+  List<String> abilities = [];
+  bool isLoadingAbilities = true;
 
   @override
   void initState() {
     super.initState();
     selectedTypes = widget.selectedTypes ?? [];
     selectedGeneration = widget.selectedGeneration;
+    selectedAbility = widget.selectedAbility;
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadAbilities();
+  }
+
+  Future<void> _loadAbilities() async {
+    final client = GraphQLProvider.of(context).value;
+    try {
+      final fetchedAbilities = await HomeRepository.getAbilities(client);
+      setState(() {
+        abilities = fetchedAbilities;
+        isLoadingAbilities = false;
+      });
+    } catch (e) {
+      // Handle error
+      setState(() {
+        isLoadingAbilities = false;
+      });
+    }
+  }
+
+  void _resetFilters() {
+    setState(() {
+      selectedTypes.clear();
+      selectedGeneration = null;
+      selectedAbility = null;
+    });
   }
 
   @override
@@ -94,142 +134,206 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         color: Colors.white,
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildHeader(),
+          const SizedBox(height: 8),
+          TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'Types'),
+              Tab(text: 'Abilities'),
+              Tab(text: 'Generations'),
+            ],
+          ),
+          SizedBox(
+            height: 200,
+            child: TabBarView(
+              controller: _tabController,
               children: [
-                Visibility(
-                  visible: selectedTypes.isNotEmpty ||
-                      (selectedGeneration ?? -1) > 0,
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainState: true,
-                  child: IconButton(
-                    tooltip: 'Reset filters',
-                    onPressed: () {
-                      setState(() {
-                        selectedTypes.clear();
-                        selectedGeneration = -1;
-                      });
-                    },
-                    icon: const Icon(Icons.restart_alt_rounded),
-                  ),
-                ),
-                const Spacer(),
-                const Center(
-                  child: Text(
-                    'Filter Pokémon',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
+                _buildTypesTab(),
+                _buildAbilitiesTab(),
+                _buildGenerationsTab(),
               ],
             ),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: AboutHeading(text: 'Types'),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: pokemonTypes.map((type) {
-                final isSelected = selectedTypes.contains(type);
-                final typeColor = typeColors[type] ?? Colors.grey;
-                return FilterChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/$type.svg',
-                        width: 20,
-                        height: 20,
-                        colorFilter: ColorFilter.mode(
-                          isSelected ? Colors.white : Colors.black,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        type,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  selected: isSelected,
-                  selectedColor: typeColor,
-                  checkmarkColor: Colors.white,
-                  showCheckmark: false,
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        selectedTypes.add(type);
-                      } else {
-                        selectedTypes.remove(type);
-                      }
-                    });
-                  },
-                  backgroundColor: Colors.grey[200],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: AboutHeading(text: 'Generation'),
-            ),
-            const SizedBox(height: 8),
-            DropdownButton<int>(
-              value: selectedGeneration,
-              hint: const Text('All generations'),
-              isExpanded: true,
-              items: [
-                const DropdownMenuItem(
-                  value: -1,
-                  child: Text('All generations'),
-                ),
-                ...generations.entries.map(
-                  (e) => DropdownMenuItem(
-                    value: e.key,
-                    child: Text(e.value),
-                  ),
-                ),
-              ],
-              onChanged: (value) => setState(() => selectedGeneration = value),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(Colors.redAccent),
-                ),
-                onPressed: () => Navigator.pop(
-                  context,
-                  (selectedTypes, selectedGeneration),
-                ),
-                child: const Text('Apply Filters'),
-              ),
-            ),
-          ],
+          ),
+          _buildApplyButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    final hasFilters = selectedTypes.isNotEmpty ||
+        selectedGeneration != null ||
+        (selectedAbility?.isNotEmpty ?? false);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        if (hasFilters)
+          IconButton(
+            tooltip: 'Reset filters',
+            onPressed: _resetFilters,
+            icon: const Icon(Icons.restart_alt_rounded),
+          ),
+        const Spacer(),
+        const Text(
+          'Filter Pokémon',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        const Spacer(),
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(
+            context,
+            (selectedTypes, selectedGeneration, selectedAbility),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTypesTab() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: pokemonTypes.map((type) {
+              final isSelected = selectedTypes.contains(type);
+              final typeColor = typeColors[type] ?? Colors.grey;
+              return FilterChip(
+                label: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/$type.svg',
+                      width: 20,
+                      height: 20,
+                      colorFilter: ColorFilter.mode(
+                        isSelected ? Colors.white : Colors.black,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      type,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                selected: isSelected,
+                selectedColor: typeColor,
+                checkmarkColor: Colors.white,
+                showCheckmark: false,
+                onSelected: (selected) {
+                  setState(() {
+                    if (selected) {
+                      selectedTypes.add(type);
+                    } else {
+                      selectedTypes.remove(type);
+                    }
+                  });
+                },
+                backgroundColor: Colors.grey[200],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAbilitiesTab() {
+    if (isLoadingAbilities) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          DropdownButton<String>(
+            value: selectedAbility,
+            hint: const Text('Select an ability'),
+            isExpanded: true,
+            items: [
+              const DropdownMenuItem(
+                value: null,
+                child: Text('All abilities'),
+              ),
+              ...abilities.map(
+                (ability) => DropdownMenuItem(
+                  value: ability,
+                  child: Text(
+                    ability
+                        .replaceAll('-', ' ')
+                        .split(' ')
+                        .map(
+                          (str) => '${str[0].toUpperCase()}${str.substring(1)}',
+                        )
+                        .join(' '),
+                  ),
+                ),
+              ),
+            ],
+            onChanged: (value) => setState(() => selectedAbility = value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGenerationsTab() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          DropdownButton<int>(
+            value: selectedGeneration,
+            hint: const Text('Select a generation'),
+            isExpanded: true,
+            items: [
+              const DropdownMenuItem(
+                value: null,
+                child: Text('All generations'),
+              ),
+              ...generations.entries.map(
+                (e) => DropdownMenuItem(
+                  value: e.key,
+                  child: Text(e.value),
+                ),
+              ),
+            ],
+            onChanged: (value) => setState(() => selectedGeneration = value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplyButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: ElevatedButton(
+        onPressed: () => Navigator.pop(
+          context,
+          (selectedTypes, selectedGeneration, selectedAbility),
+        ),
+        child: const Text('Apply Filters'),
       ),
     );
   }

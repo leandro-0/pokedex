@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/home/data/models/pokemon_tile.dart';
+import 'package:pokedex/src/pokemon_details/presentation/providers/pokemon_info_notifier.dart';
 import 'package:pokedex/src/pokemon_details/presentation/views/pokemon_details.dart';
+import 'package:provider/provider.dart';
 
 class DetailsScreen extends StatefulWidget {
   static const String routeName = '/global-details';
@@ -42,9 +44,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return PageView.builder(
       controller: controller,
       itemCount: 1025,
-      itemBuilder: (_, index) => PokemonDetails(
-        id: index + 1,
-        pk: _getPokemonTile(arg, index + 1),
+      itemBuilder: (_, index) => ChangeNotifierProvider(
+        create: (_) => PokemonInfoNotifier(),
+        child: PokemonDetails(
+          id: index + 1,
+          pk: _getPokemonTile(arg, index + 1),
+        ),
       ),
     );
   }

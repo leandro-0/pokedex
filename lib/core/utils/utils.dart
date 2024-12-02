@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex/src/pokemon_details/presentation/widgets/empty_indicator.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Utils {
   static String capitalize(String s) {
@@ -47,5 +50,18 @@ class Utils {
         );
       },
     );
+  }
+
+  static Future<ShareResult> shareImageWithText(
+    Uint8List image,
+    String text,
+  ) async {
+    try {
+      final img = XFile.fromData(image, mimeType: 'image/png');
+      final result = await Share.shareXFiles([img], text: text);
+      return result;
+    } catch (e) {
+      return ShareResult.unavailable;
+    }
   }
 }

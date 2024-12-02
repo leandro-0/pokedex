@@ -24,6 +24,7 @@ class TypeChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           SvgPicture.asset(
             'assets/icons/$type.svg',
